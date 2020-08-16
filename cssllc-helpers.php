@@ -92,40 +92,6 @@ if ( !function_exists( 'create_taxonomy_labels' ) ) {
 
 }
 
-if ( !function_exists( 'get_template_part_args' ) ) {
-
-	/**
-	 * Get template part, and pass-thru arguments.
-	 *
-	 * @see get_template_part()
-	 * @uses locate_template()
-	 * @param string $slug
-	 * @param null|string $name
-	 * @param array $args
-	 */
-	function get_template_part_args( $slug, $name = null, $template_args = array() ) {
-		do_action( "get_template_part_{$slug}", $slug, $name );
-
-		$templates = array();
-		$name      = ( string ) $name;
-
-		if ( '' !== $name )
-			$templates[] = "{$slug}-{$name}.php";
-
-		$templates[] = "{$slug}.php";
-
-		do_action( 'get_template_part', $slug, $name, $templates );
-
-		$file = locate_template( $templates );
-
-		if ( empty( $file ) )
-			return;
-
-		require $file;
-	}
-
-}
-
 if ( !function_exists( 'prerender' ) ) {
 
 	/**
