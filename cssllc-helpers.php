@@ -3,7 +3,7 @@
  * Description: WordPress helpers from CSSLLC.
  * Author URI: https://develop.calebstauffer.com
  * Author: Caleb Stauffer
- * Plugin URI: https://gist.github.com/crstauf/46a29f046cfffcaf2829401ae0773c90
+ * Plugin URI: https://github.com/cssllc/mu-plugins
  */
 
 if ( !function_exists( 'create_post_type_labels' ) ) {

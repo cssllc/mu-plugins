@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin name: CSSLLC Subresource Integrity
- * Plugin URI: https://gist.github.com/crstauf/9a2f412e48c6630e6de945bd1d0e9e53
+ * Plugin URI: https://github.com/cssllc/mu-plugins
  * Description: WordPress drop-in for adding attribute to scripts and stylesheets for subresource integrity implementation.
  * Author URI: https://develop.calebstauffer.com
  * Author: Caleb Stauffer

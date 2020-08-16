@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin name: Dynamic Styles
- * Plugin URI: https://gist.github.com/crstauf/20479cb9d1dbcd59fa81647aae484cd9
+ * Plugin URI: https://github.com/cssllc/mu-plugins
  * Author: Caleb Stauffer
  * Author URI: https://develop.calebstauffer.com
  * Version: 2.0

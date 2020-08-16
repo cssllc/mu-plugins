@@ -5,7 +5,7 @@
  * Description: Abstract class for CPT registrars from CSSLLC.
  * Author URI: https://develop.calebstauffer.com
  * Author: Caleb Stauffer
- * Plugin URI: https://gist.github.com/crstauf/30ee826b9cd4f0044ba7b4febc3e9dbd
+ * Plugin URI: https://github.com/cssllc/mu-plugins
  */
 
 defined( 'ABSPATH' ) || die();

@@ -3,7 +3,7 @@
  * Description: WordPress enhancements from CSSLLC.
  * Author URI: https://develop.calebstauffer.com
  * Author: Caleb Stauffer
- * Plugin URI: https://gist.github.com/crstauf/68b4d37ebdc0423d2275bce49527a2f4
+ * Plugin URI: https://github.com/cssllc/mu-plugins
  *
  * @todo add menu theme location to container classes
  * @todo include menu-{slug}-container class in nav menu container even if class specified

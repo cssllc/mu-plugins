@@ -3,6 +3,7 @@
  * Plugin name: Advanced Custom Fields add-on: JSON export
  * Author: Caleb Stauffer
  * Author URI: https://develop.calebstauffer.com
+ * Plugin URI: https://github.com/cssllc/mu-plugins
  */
 
 defined( 'ABSPATH' ) || die();
