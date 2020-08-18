@@ -4,9 +4,6 @@
  * Author URI: https://develop.calebstauffer.com
  * Author: Caleb Stauffer
  * Plugin URI: https://github.com/cssllc/mu-plugins
- *
- * @todo add menu theme location to container classes
- * @todo include menu-{slug}-container class in nav menu container even if class specified
  */
 
 /**
