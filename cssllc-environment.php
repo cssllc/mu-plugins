@@ -15,11 +15,15 @@ if ( !function_exists( 'cssllc_require_set_environment_type' ) ) {
 	 * @link https://core.trac.wordpress.org/ticket/50896 Trac ticket discussing filtering value.
 	 * @link https://core.trac.wordpress.org/ticket/50896#comment:13 Trac ticket comment where mu-plugin first posted.
 	 *
+	 * @uses wp_installing()
 	 * @uses wp_get_environment_type()
 	 * @uses wp_die()
 	 */
 	function cssllc_require_set_environment_type() : void {
 		if ( !function_exists( 'wp_get_environment_type' ) )
+			return;
+
+		if ( wp_installing() )
 			return;
 
 		$current_env = '';
