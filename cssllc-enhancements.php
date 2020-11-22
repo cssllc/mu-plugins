@@ -176,3 +176,29 @@ add_filter( 'page_template_hierarchy', function( $templates ) {
 
 	return $templates;
 } );
+
+/**
+ * Filter: body_class
+ *
+ * Adjust "page-template-default" class.
+ *
+ * @param string[] $classes
+ * @return string[]
+ */
+add_filter( 'body_class', function( array $classes ) : array {
+	if ( 'page' !== get_post_type( get_queried_object_id() ) )
+		return $classes;
+
+	if ( !in_array( 'page-template-default', $classes ) )
+		return $classes;
+
+	$template = get_page_template();
+
+	if ( 'page.php' === basename( $template ) )
+		return $classes;
+
+	$key = array_search( 'page-template-default', $classes );
+	$classes[ $key ] = 'page-template-' . basename( $template, '.php' );
+
+	return $classes;
+} );
