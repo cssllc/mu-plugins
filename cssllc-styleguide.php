@@ -48,10 +48,14 @@ class CSSLLC_StyleGuide {
 	 * Check if user can view styleguide.
 	 *
 	 * @uses current_user_can()
+	 * @uses wp_get_environment_type()
 	 * @return bool
 	 */
 	static function is_user_permitted() : bool {
-		return current_user_can( 'switch_themes' );
+		return (
+			current_user_can( 'switch_themes' )
+			|| 'production' !== wp_get_environment_type()
+		);
 	}
 
 	/**
@@ -308,13 +312,27 @@ class CSSLLC_StyleGuide {
 	 */
 	protected function __construct() {
 
+		add_action( 'init', array( $this, 'action__init' ) );
+
+	}
+
+	/**
+	 * Action: init
+	 *
+	 * Add other hooks if user permitted.
+	 *
+	 * @uses static::is_user_permitted()
+	 */
+	function action__init() {
+		if ( !static::is_user_permitted() )
+			return;
+
 		add_action( 'template_redirect', array( $this, 'action__template_redirect' ) );
 		add_action( 'wp_head', array( $this, 'action__wp_head' ) );
 		add_action( 'admin_bar_menu', array( $this, 'action__admin_bar_menu' ), 99 );
 
 		add_filter( 'wp_resource_hints', array( $this, 'filter__wp_resource_hints' ), 10, 2 );
 		add_filter( 'document_title_parts', array( $this, 'filter__document_title_parts' ) );
-
 	}
 
 	/**
@@ -329,9 +347,6 @@ class CSSLLC_StyleGuide {
 	 */
 	function action__template_redirect() : void {
 		if ( !static::is_styleguide_page() )
-			return;
-
-		if ( !static::is_user_permitted() )
 			return;
 
 		status_header( 200 );
@@ -387,12 +402,8 @@ class CSSLLC_StyleGuide {
 	 * Add link to toolbar.
 	 *
 	 * @param object $bar
-	 * @uses static::is_user_permitted()
 	 */
 	function action__admin_bar_menu( object $bar ) : void {
-		if ( !static::is_user_permitted() )
-			return;
-
 		$bar->add_menu( array(
 			'id' => 'cssllc-styleguide',
 			'title' => 'Site styleguide',
