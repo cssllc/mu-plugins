@@ -406,7 +406,7 @@ class CSSLLC_StyleGuide {
 	function action__admin_bar_menu( object $bar ) : void {
 		$bar->add_menu( array(
 			'id' => 'cssllc-styleguide',
-			'title' => 'Site styleguide',
+			'title' => 'View Site Styleguide',
 			'parent' => 'site-name',
 			'href' => home_url( static::SLUG ),
 		) );
