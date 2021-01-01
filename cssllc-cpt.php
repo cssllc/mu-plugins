@@ -64,8 +64,10 @@ abstract class _CSSLLC_CPT {
 
 		if ( !empty( $args ) )
 			foreach ( $args as $arg => $value )
-				if ( property_exists( $this, $arg ) )
-					$this->_{$arg} = $value;
+				if ( property_exists( $this, $arg ) ) {
+					$property = '_' . $arg;
+					$this->$property = $value;
+				}
 
 		$this->_nonce = array(
 			'action' => __FILE__ . '::' . __LINE__,
@@ -140,7 +142,11 @@ abstract class _CSSLLC_CPT {
 			$defaults
 		);
 
-		$args = wp_parse_args( array_filter( $this->_args ), array(
+		foreach ( array( 'labels', 'rewrites', 'supports' ) as $arg )
+			if ( empty( $this->_args[ $arg ] ) )
+				 unset( $this->_args[ $arg ] );
+
+		$args = wp_parse_args( $this->_args, array(
 			'labels'             => $labels,
 			'public'             => true,
 			'publicly_queryable' => true,
