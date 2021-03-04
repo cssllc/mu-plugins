@@ -308,7 +308,7 @@ abstract class _CSSLLC_CPT {
 	 * @return string
 	 */
 	function get_nonce() : string {
-		return wp_create_nonce( $this->get_nonce__action() );
+		return wp_create_nonce( $this->get_nonce_action() );
 	}
 
 	/**
