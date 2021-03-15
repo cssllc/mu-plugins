@@ -29,14 +29,14 @@ abstract class _CSSLLC_CPT {
 
 	/**
 	 * @var string CSS 'content' code of Dashicon to represent post type.
-	 * @link https://developer.wordpress.org/resource/dashicons/#book-alt
+	 * @link https://developer.wordpress.org/resource/dashicons/
 	 */
 	protected $dashicon_code;
 
 	/** @var array Arguments for post type. */
 	protected $args = array(
 		'labels'   => array(),
-		'rewrites' => array(),
+		'rewrite'  => array(),
 		'supports' => array(),
 	);
 
@@ -72,19 +72,8 @@ abstract class _CSSLLC_CPT {
 
 	/**
 	 * Construct.
-	 *
-	 * @param array $args Arguments to overwrite defaults.
 	 */
-	protected function __construct( $args = array() ) {
-		do_action( 'qm/start', get_called_class() . '::' . __FUNCTION__ . '()' );
-
-		if ( !empty( $args ) )
-			foreach ( $args as $arg => $value )
-				if ( property_exists( $this, $arg ) ) {
-					$property = '_' . $arg;
-					$this->$property = $value;
-				}
-
+	protected function __construct() {
 		$this->nonce = array(
 			'action' => __FILE__ . '::' . __LINE__,
 			  'name' => '_wpnonce_' . $this->type,
@@ -95,8 +84,6 @@ abstract class _CSSLLC_CPT {
 
 		add_filter( 'dashboard_glance_items', array( $this, 'filter__dashboard_glance_items' ) );
 		add_filter( 'post_updated_messages',  array( $this, 'filter__post_updated_messages'  ) );
-
-		do_action( 'qm/stop', get_called_class() . '::' . __FUNCTION__ . '()' );
 	}
 
 	/**
@@ -106,7 +93,7 @@ abstract class _CSSLLC_CPT {
 	 * @return mixed
 	 */
 	function __get( string $property ) {
-		return $this->$key;
+		return $this->$property;
 	}
 
 
@@ -124,12 +111,12 @@ abstract class _CSSLLC_CPT {
 	 * Action: init
 	 *
 	 * @uses register_post_type()
-	 * @link https://codex.wordpress.org/Function_Reference/register_post_type#Arguments
+	 * @link https://developer.wordpress.org/reference/functions/register_post_type/#parameter-detail-information Parameters documentation.
 	 * @return void
 	 */
 	function action__init() : void {
 
-		$defaults = array(
+		$label_defaults = array(
 			'name'                  => $this->plural,
 			'singular_name'         => $this->singular,
 			'add_new'               => 'Add ' . $this->singular,
@@ -158,7 +145,7 @@ abstract class _CSSLLC_CPT {
 		);
 
 		if ( function_exists( 'create_post_type_labels' ) )
-			$defaults = create_post_type_labels( $this->singular, $this->plural );
+			$label_defaults = create_post_type_labels( $this->singular, $this->plural );
 
 		$labels = wp_parse_args(
 			(
@@ -166,51 +153,53 @@ abstract class _CSSLLC_CPT {
 				? $this->args['labels']
 				: array()
 			),
-			$defaults
+			$label_defaults
 		);
 
-		foreach ( array( 'labels', 'rewrites', 'supports' ) as $arg )
-			if ( empty( $this->args[ $arg ] ) )
+		foreach ( array( 'labels', 'rewrite', 'supports' ) as $arg )
+			if (
+				array_key_exists( $arg, $this->args )
+				&& array() === $this->args[ $arg ]
+			)
 				 unset( $this->args[ $arg ] );
 
 		$args = wp_parse_args( $this->args, array(
 			'labels'             => $labels,
 			'public'             => true,
-			'publicly_queryable' => true,
-			'show_ui'            => true,
-			'show_in_menu'       => true,
-			'query_var'          => true,
 			'has_archive'        => true,
 			'hierarchical'       => false,
 			'show_in_rest'       => true,
 		) );
 
-		$args['rewrite'] = wp_parse_args(
-			(
-				!empty( $this->args['rewrite'] )
-				? $this->args['rewrite']
-				: array()
-			),
-			array(
-				'slug'       => $this->type,
-				'with_front' => false,
-			)
+		if (
+			     !empty( $this->args['rewrite'] )
+			&& is_array( $this->args['rewrite'] )
+		)
+			$args['rewrite'] = wp_parse_args(
+				(
+					!empty( $this->args['rewrite'] )
+					? $this->args['rewrite']
+					: array()
+				),
+				array(
+					'slug'       => $this->type,
+					'with_front' => false,
+				)
+			);
+
+		$args['supports'] = array(
+			'title',
+			'author',
+			'editor',
+			'excerpt',
+			'thumbnail',
 		);
 
-		$args['supports'] = wp_parse_args(
-			(
-				!empty( $this->args['supports'] )
-				? $this->args['supports']
-				: array()
-			),
-			array(
-				'title',
-				'author',
-				'editor',
-				'excerpt',
-				'thumbnail',
-			)
-		);
+		if (
+			       !empty( $this->args['supports'] )
+			&& array() !== $this->args['supports']
+		)
+			$args['supports'] = $this->args['supports'];
 
 		register_post_type( $this->type, $args );
 
@@ -246,6 +235,11 @@ abstract class _CSSLLC_CPT {
 	 * @return array
 	 */
 	function filter__dashboard_glance_items( array $items ) : array {
+		$object = get_post_type_object( $this->type );
+
+		if ( !current_user_can( $object->cap->edit_posts ) )
+			return $items;
+
 		$count = wp_count_posts( $this->type );
 
 		if ( empty( $count->publish ) )
