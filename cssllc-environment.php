@@ -6,6 +6,9 @@
  * Plugin URI: https://github.com/cssllc/mu-plugins
  */
 
+# Set development email address.
+$dev_email_address = '';
+
 if ( !function_exists( 'cssllc_require_set_environment_type' ) ) {
 
 	/**
@@ -64,8 +67,6 @@ cssllc_require_set_environment_type();
 ##     ## ########   ######   #######   ######     ##    ##     ## ######## ##    ##    ##     ######
 */
 
-$dev_email_address = 'develop@calebstauffer.com';
-
 if ( empty( $dev_email_address ) )
 	trigger_error( 'Update <code>$dev_email_address</code> in ' . __FILE__, E_USER_WARNING );
 
@@ -88,6 +89,48 @@ if ( 'production' === wp_get_environment_type() ) {
 	return;
 
 }
+
+/**
+ * Action: wp_dashboard_setup
+ *
+ * Add Dashboard widget to list adjustments.
+ *
+ * @uses wp_add_dashboard_widget()
+ * @return void
+ */
+add_action( 'wp_dashboard_setup', function() : void {
+	wp_add_dashboard_widget(
+		'cssllc-development-environment',
+		'Development Environment Adjustments',
+		function() {
+			echo '<ul style="list-style-type: disc; margin-left: 20px">'
+
+				# WC_SQUARE_ENABLE_STAGING constant
+				. '<li>Set constant to disable Square payments</li>'
+
+				# `pre_option_admin_email` and `pre_site_option_admin_email` filters
+				. '<li>Override WordPress admin email address</li>'
+
+				# `wp_mail` filter
+				. '<li>Override <code>wp_mail()</code> args to use development email address</li>'
+
+				# `AW_PREVENT_WORKFLOWS` constant, `automatewoo_custom_validate_workflow` filter
+				. '<li>Prevent running AutomateWoo workflows</li>'
+
+				# `woocommerce_subscriptions_is_duplicate_site` filter
+				. '<li>Identify site as duplicate for WooCommerce Subscriptions</li>'
+
+				# `user_has_cap` filter
+				. '<li>Always show Query Monitor output on frontend</li>'
+
+			. '</ul>';
+		},
+		null,
+		null,
+		'normal',
+		'high'
+	);
+} );
 
 /**
  * Action: admin_notices
