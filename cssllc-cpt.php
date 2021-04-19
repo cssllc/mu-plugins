@@ -204,14 +204,14 @@ abstract class _CSSLLC_CPT {
 	 * @return void
 	 */
 	protected function setup() : void {
-		if ( empty( $this->args['labels'] ) )
-			$this->args['labels'] = array();
+		if ( !array_key_exists( 'labels',  $this->args ) ) $this->args['labels']  = array();
+		if ( !array_key_exists( 'rewrite', $this->args ) ) $this->args['rewrite'] = array();
 
-		if ( empty( $this->args['rewrite'] ) )
-			$this->args['rewrite'] = array();
+		if ( is_array( $this->args['labels'] ) )
+			$this->args['labels'] = wp_parse_args( $this->args['labels'], static::default_labels() );
 
-		$this->args['labels']  = wp_parse_args( $this->args['labels'],  static::default_labels() );
-		$this->args['rewrite'] = wp_parse_args( $this->args['rewrite'], static::$default_args['rewrite'] );
+		if ( is_array( $this->args['rewrite'] ) )
+			$this->args['rewrite'] = wp_parse_args( $this->args['rewrite'], static::$default_args['rewrite'] );
 	}
 
 
