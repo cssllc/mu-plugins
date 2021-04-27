@@ -93,6 +93,6 @@ class CSSLLC_ACF {
 
 }
 
-add_action( 'acf/init', array( 'CSSLLC_ACF', 'instance' ), 0 );
+add_action( 'init', array( 'CSSLLC_ACF', 'instance' ), 0 );
 
 ?>
