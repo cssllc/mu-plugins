@@ -194,9 +194,25 @@ add_filter( 'body_class', function( array $classes ) : array {
 
 	$template = get_page_template();
 
-	if ( 'page.php' === basename( $template ) )
+	# If default template, bail.
+	if ( in_array( $template, array(
+		get_stylesheet_directory() . '/page.php',
+		  get_template_directory() . '/page.php',
+	) ) )
 		return $classes;
 
+	# If frontpage, get frontpage template.
+	if (
+		empty( $template )
+		&& is_front_page()
+	)
+		$template = get_front_page_template();
+
+	# If no template, bail.
+	if ( empty( $template ) )
+		return $classes;
+
+	# Replace default class with specific class.
 	$key = array_search( 'page-template-default', $classes );
 	$classes[ $key ] = 'page-template-' . basename( $template, '.php' );
 
