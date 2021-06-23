@@ -71,7 +71,8 @@ add_action( 'wp_print_footer_scripts', function() {
 
 		a[href=""],
 		a[href="#"],
-		a[href*="google.com"],
+		a[href="http://google.com"],
+		a[href="https://google.com"],
 		a[href*="javascript"] {
 			position: relative;
 			counter-increment: empty-links;
@@ -79,7 +80,8 @@ add_action( 'wp_print_footer_scripts', function() {
 
 		a[href=""]::before,
 		a[href="#"]::before,
-		a[href*="google.com"]::before,
+		a[href="http://google.com"]::before,
+		a[href="https://google.com"]::before,
 		a[href*="javascript"]::before {
 			content: 'Empty link';
 			position: absolute;
