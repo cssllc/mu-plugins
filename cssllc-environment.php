@@ -243,3 +243,23 @@ add_filter( 'user_has_cap', function( array $allcaps ) : array {
 	$allcaps['view_query_monitor'] = true;
 	return $allcaps;
 } );
+
+/**
+ * Action: wp_head
+ *
+ * - change 'init' version to timestamp
+ *
+ * Safari can be really sticky with cache, so always change the
+ * version to ensure latest asset.
+ *
+ * @return void
+ */
+add_action( 'wp_head', function() : void {
+	foreach ( wp_scripts()->registered as $handle => &$script )
+		if ( 'init' === $script->ver )
+			$script->ver = time();
+
+	foreach ( wp_styles()->registered as $handle => &$style )
+		if ( 'init' === $style->ver )
+			$style->ver = time();
+}, 5 );
