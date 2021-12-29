@@ -245,7 +245,7 @@ add_filter( 'user_has_cap', function( array $allcaps ) : array {
 } );
 
 /**
- * Action: wp_head
+ * Action: send_headers, wp_head
  *
  * - change 'init' version to timestamp
  *
@@ -254,12 +254,15 @@ add_filter( 'user_has_cap', function( array $allcaps ) : array {
  *
  * @return void
  */
-add_action( 'wp_head', function() : void {
+$change_asset_versions = function() : void {
 	foreach ( wp_scripts()->registered as $handle => &$script )
 		if ( 'init' === $script->ver )
-			$script->ver = time();
+			$script->ver = WP_START_TIMESTAMP;
 
 	foreach ( wp_styles()->registered as $handle => &$style )
 		if ( 'init' === $style->ver )
-			$style->ver = time();
-}, 5 );
+			$style->ver = WP_START_TIMESTAMP;
+};
+
+add_action( 'send_headers', $change_asset_versions, 5 );
+add_action( 'wp_head',      $change_asset_versions, 5 );
