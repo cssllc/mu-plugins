@@ -235,8 +235,8 @@ add_filter( 'automatewoo_custom_validate_workflow', '__return_false' );
  */
 add_filter( 'user_has_cap', function( array $allcaps ) : array {
 	if (
-		defined( 'QM_DISABLE' )
-		&& QM_DISABLE
+		defined( 'QM_DISABLED' )
+		&& QM_DISABLED
 	)
 		return $allcaps;
 
