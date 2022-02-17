@@ -54,6 +54,19 @@ if ( !function_exists( 'cssllc_require_set_environment_type' ) ) {
 
 }
 
+if ( !function_exists( 'is_production' ) ) {
+
+	/**
+	 * Check if production environment.
+	 *
+	 * @return bool
+	 */
+	function is_production() : bool {
+		return 'production' === wp_get_environment_type();
+	}
+
+}
+
 cssllc_require_set_environment_type();
 
 
@@ -73,7 +86,7 @@ if ( empty( $dev_email_address ) )
 /**
  * Check if production environment.
  */
-if ( 'production' === wp_get_environment_type() ) {
+if ( is_production() ) {
 
 	/**
 	 * Add inactive status indication to mu-plugin row meta.
