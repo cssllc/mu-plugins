@@ -135,6 +135,9 @@ add_action( 'wp_dashboard_setup', function() : void {
 
 				# `user_has_cap` filter
 				. '<li>Always show Query Monitor output on frontend</li>'
+				
+				# 'action_scheduler_run_queue' action
+				. '<li>Disabled Action Scheduler default runner</li>'
 
 			. '</ul>';
 		},
@@ -279,3 +282,20 @@ $change_asset_versions = function() : void {
 
 add_action( 'send_headers', $change_asset_versions, 5 );
 add_action( 'wp_head',      $change_asset_versions, 5 );
+
+/**
+ * Action: init
+ *
+ * Disable Action Scheduler default runner.
+ *
+ * @uses ActionScheduler::runner()
+ *
+ * @return void
+ */
+add_action( 'init', static function() : void {
+	if ( ! class_exists( 'ActionScheduler' ) ) {
+		return;
+	}
+	
+	remove_action( 'action_scheduler_run_queue', array( ActionScheduler::runner(), 'run' ) );
+} );
