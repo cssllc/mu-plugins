@@ -207,3 +207,25 @@ if ( !function_exists( 'make_email_address_clickable' ) ) {
 	}
 
 }
+
+if ( !function_exists( 'make_phone_number_clickable' ) ) {
+
+	function make_phone_number_clickable( string $phone_number, bool $antispambot = true ) : string {
+		$markup = $phone_number;
+
+		if ( empty( $markup ) )
+			return '';
+
+		if ( $antispambot )
+			$markup = antispambot( $markup );
+
+		$digits = preg_replace( '/[^\+0-9]/', '', $phone_number );
+		$markup = sprintf( '<a href="tel:%s">%s</a>',
+			esc_attr( antispambot( $digits ) ),
+			$markup
+		);
+
+		return $markup;
+	}
+
+}
