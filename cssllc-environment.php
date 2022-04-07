@@ -299,3 +299,19 @@ add_action( 'init', static function() : void {
 	
 	remove_action( 'action_scheduler_run_queue', array( ActionScheduler::runner(), 'run' ) );
 } );
+
+/**
+ * Action: plugins_loaded
+ *
+ * Disable BackWPup scheduled backups.
+ *
+ * @return void
+ */
+add_action( 'plugins_loaded', static function() : void {
+	if ( ! defined( 'DOING_CRON' ) || ! DOING_CRON ) {
+		return;
+	}
+
+	remove_action( 'backwpup_cron',          array( 'BackWPup_Cron', 'run' ) );
+	remove_action( 'backwpup_check_cleanup', array( 'BackWPup_Cron', 'check_cleanup' ) );
+}, 12 );
