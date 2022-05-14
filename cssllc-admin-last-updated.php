@@ -17,17 +17,6 @@ class CSSLLC_Admin_Last_Updated {
 	}
 
 	/**
-	 * Generate option name for timestamp.
-	 *
-	 * @param string $id
-	 *
-	 * @return string
-	 */
-	protected static function timestamp_option_name( string $id ) : string {
-		return sprintf( '_cssllc_admin_last_updated_%s', $id );
-	}
-
-	/**
 	 * Construct.
 	 */
 	protected function __construct() {
@@ -37,6 +26,12 @@ class CSSLLC_Admin_Last_Updated {
 
 		add_action( 'update_option_blog_public', array( $this, 'save_option_timestamp' ), 10, 3 );
 		add_action( 'delete_option_blog_public', array( $this, 'save_option_timestamp' ) );
+		
+		if ( ! defined( 'WP_CLI' ) || ! WP_CLI ) {
+			return;
+		}
+		
+		WP_CLI::add_command( 'admin-last-updated get', array( $this, 'cli__get' ) );
 
 	}
 
@@ -138,7 +133,7 @@ class CSSLLC_Admin_Last_Updated {
 	/**
 	 * Action: update_option_{$option_name}
 	 *
-	 * Save timestamp on option update.
+	 * Save timestamp on option update/delete.
 	 *
 	 * @param mixed $old_value
 	 * @param mixed $new_value
@@ -170,9 +165,62 @@ class CSSLLC_Admin_Last_Updated {
 		$this->update_option( $option_name );
 	}
 
+	/**
+	 * CLI command: admin-last-updated get
+	 *
+	 * @param array $args
+	 * @param array $assoc
+	 *
+	 * @return void
+	 */
+	public function cli__get( array $args, array $assoc = array() ) : void {
+		$id = $args[0];
+		$option = get_option( self::OPTION_NAME, array() );
+		
+		if ( 
+			   empty( $option ) 
+			|| empty( $option[ $id ] ) 
+		) {
+			WP_CLI::warning( sprintf( 'No record of last update to ´%s´', $id ) );
+			return;
+		}
+		
+		$updated = $option[ $id ];
+		
+		if ( empty( $assoc[ 'seconds' ] ) ) {
+			$updated = date( 'c', $updated );
+		}
+		
+		WP_CLI::line( $updated );
+	}
+
+	/**
+	 * CLI command: admin-last-updated list
+	 *
+	 * @param array $args
+	 * @param array $assoc
+	 *
+	 * @return void
+	 */
+	public function cli__list( array $args, array $assoc = array() ) : void {
+		
+	}
+
+	/**
+	 * CLI command: admin-last-updated clear
+	 *
+	 * @param array $args
+	 * @param array $assoc
+	 *
+	 * @return void
+	 */
+	public function cli__clear( array $args, array $assoc = array() ) : void {
+		
+	}
+
 }
 
-if ( ! is_admin() ) {
+if ( ! is_admin() && ( ! defined( 'WP_CLI' ) || ! WP_CLI ) ) {
 	return;
 }
 
