@@ -220,3 +220,36 @@ add_filter( 'body_class', function( array $classes ) : array {
 
 	return $classes;
 } );
+
+/**
+ * Filter: wp_nav_menu_args
+ *
+ * Add theme_location to container class.
+ *
+ * @param array $args
+ *
+ * @return array
+ */
+add_filter( 'wp_nav_menu_args', static function( array $args ) {
+	if ( empty( $args['theme_location'] ) ) {
+		return $args;
+	}
+
+	if ( empty( $args['container_class'] ) ) {
+		$args['container_class'] = '';
+	}
+
+	$menu = wp_get_nav_menu_object( $args['menu'] );
+
+	$locations = get_nav_menu_locations();
+	if ( ! $menu && $locations && isset( $locations[ $args['theme_location'] ] ) ) {
+		$menu = wp_get_nav_menu_object( $locations[ $args['theme_location'] ] );
+	}
+
+	$args['container_class'] .= sprintf( ' menu-location-%s-container', $args['theme_location'] );
+	$args['container_class'] .= sprintf( ' menu-%s-container', $menu->slug );
+
+	$args['container_class'] = trim( $args['container_class'] );
+
+	return $args;
+} );
