@@ -18,7 +18,7 @@ add_action( 'wp_enqueue_scripts', function() {
 	remove_action( 'admin_print_styles',  'print_emoji_styles' );
 	remove_action( 'wp_enqueue_scripts',  'wp_enqueue_global_styles' );
 	remove_action( 'wp_body_open',        'wp_global_styles_render_svg_filters' );
-} );
+}, 0 );
 
 /**
  * Filter: body_class
