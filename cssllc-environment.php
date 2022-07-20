@@ -120,6 +120,9 @@ add_action( 'wp_dashboard_setup', function() : void {
 
 				# WC_SQUARE_ENABLE_STAGING constant
 				. '<li>Set constant to disable Square payments</li>'
+				
+				# `pre_option_blog_public` filters
+				. '<li>Prevent search engine indexing</li>'
 
 				# `pre_option_admin_email` and `pre_site_option_admin_email` filters
 				. '<li>Override WordPress admin email address</li>'
@@ -315,3 +318,43 @@ add_action( 'plugins_loaded', static function() : void {
 	remove_action( 'backwpup_cron',          array( 'BackWPup_Cron', 'run' ) );
 	remove_action( 'backwpup_check_cleanup', array( 'BackWPup_Cron', 'check_cleanup' ) );
 }, 12 );
+
+/**
+ * Filter: pre_option_blog_public, pre_cache_alloptions, alloptions
+ *
+ * Prevent search engine indexing.
+ *
+ * @param $value
+ *
+ * @return int
+ */
+add_filter( 'pre_option_blog_public', static function ( $value ) {
+	if ( is_string(  $value ) ) { return '0'; }
+	if ( is_numeric( $value ) ) { return  0;  }
+
+	return false;
+} );
+
+add_filter( 'pre_cache_alloptions', static function ( array $alloptions ) : array {
+	if ( is_string( $alloptions['blog_public'] ) ) {
+		$alloptions['blog_public'] = '0';
+	} else if ( is_numeric( $alloptions['blog_public'] ) ) {
+		$alloptions['blog_public'] = 0;
+	} else {
+		$alloptions['blog_public'] = false;
+	}
+
+	return $alloptions;
+} );
+
+add_filter( 'alloptions', static function ( array $alloptions ) : array {
+	if ( is_string( $alloptions['blog_public'] ) ) {
+		$alloptions['blog_public'] = '0';
+	} else if ( is_numeric( $alloptions['blog_public'] ) ) {
+		$alloptions['blog_public'] = 0;
+	} else {
+		$alloptions['blog_public'] = false;
+	}
+
+	return $alloptions;
+} );
