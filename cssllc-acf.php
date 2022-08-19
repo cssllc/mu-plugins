@@ -42,6 +42,8 @@ class CSSLLC_ACF {
 
 		$this->maybe_create_directory();
 
+		add_action( 'acf/input/admin_head', array( $this, 'action__acf_input_admin_head' ) );
+
 		add_filter( 'acf/settings/save_json', array( $this, 'filter__acf_settings_save_json' ) );
 		add_filter( 'acf/settings/load_json', array( $this, 'filter__acf_settings_load_json' ) );
 
@@ -63,6 +65,17 @@ class CSSLLC_ACF {
 			return;
 
 		file_put_contents( $filepath, "<?php\n/**\n * Silence is golden.\n *\n * Directory contains ACF JSON export files.\n */" );
+	}
+	
+	/**
+	 * Action: acf/input/admin_head
+	 *
+	 * Add class to hide label.
+	 *
+	 * @return void
+	 */
+	function action__acf_input_admin_head() : void {
+		echo '<style>.hide-label .acf-label { display: none; }</style>';
 	}
 
 	/**
