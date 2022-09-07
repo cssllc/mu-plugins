@@ -13,7 +13,7 @@ defined( 'ABSPATH' ) || die();
 /**
  * Abstract class for custom post types.
  */
-abstract class _CSSLLC_CPT {
+abstract class CSSLLC_CPT {
 
 	/**
 	 * @var string Custom post type slug.
@@ -73,13 +73,14 @@ abstract class _CSSLLC_CPT {
 	 * @return void
 	 */
 	static function init() : void {
-		static $init = false;
+		static $init = array();
 
-		if ( true === $init )
+		if ( in_array( static::class, $init ) )
 			return;
 
 		static::instance();
-		$init = true;
+
+		$init[] = static::class;
 	}
 
 	/**
@@ -88,12 +89,12 @@ abstract class _CSSLLC_CPT {
 	 * @return _CSSLLC_CPT
 	 */
 	static function instance() : _CSSLLC_CPT {
-		static $instance = null;
+		static $instances = array();
 
-		if ( is_null( $instance ) )
-			$instance = new static;
+		if ( ! array_key_exists( static::class, $instances ) )
+			$instances[ static::class ] = new static;
 
-		return $instance;
+		return $instances[ static::class ];
 	}
 
 	/**
