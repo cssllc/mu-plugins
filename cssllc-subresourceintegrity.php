@@ -102,6 +102,10 @@ class CSSLLC_SubresourceIntegrity {
 	 * @return string
 	 */
 	function filter__script_loader_tag( string $tag, string $handle ) {
+		if ( 'script_loader_tag' !== current_filter() ) {
+			return $tag;
+		}
+
 		return $this->maybe_add_attribute( $tag, $handle );
 	}
 
@@ -116,6 +120,10 @@ class CSSLLC_SubresourceIntegrity {
 	 * @return string
 	 */
 	function filter__style_loader_tag( string $tag, string $handle ) {
+		if ( 'style_loader_tag' !== current_filter() ) {
+			return $tag;
+		}
+
 		return $this->maybe_add_attribute( $tag, $handle, false );
 	}
 
@@ -131,9 +139,17 @@ class CSSLLC_SubresourceIntegrity {
 	protected function maybe_add_attribute( string $tag, string $handle, bool $is_script = true ) {
 
 		# Provide switch for easy third-party control.
-		$add = defined( 'WP_DEVELOP' ) ? !WP_DEVELOP : true;
-		if ( !apply_filters( 'add_subresource_integrity', $add, $handle, $is_script ) )
+		$add = in_array( wp_get_environment_type(), array( 'staging', 'production' ) );
+		$add = apply_filters( 'add_subresource_integrity', $add, $handle, $is_script );
+		$add = apply_filters( sprintf( 
+			'add_subresource_integrity_%s_%s',
+			$handle,
+			$is_script ? 'script' : 'style'
+		), $add );
+
+		if ( ! $add ) {
 			return $tag;
+		}
 
 		# Check if tag already has the attribute.
 		if ( false !== strpos( $tag, ' ' . static::ATTRIBUTE . '=' ) ) {
@@ -150,7 +166,7 @@ class CSSLLC_SubresourceIntegrity {
 
 		# Create the attribute HTML.
 		# WordPress uses single quotes, so use single quotes instead of doubles.
-		$attribute = ' ' . static::ATTRIBUTE . '=\'' . esc_attr( $hash ) . '\' crossorigin=\'anonymous\'';
+		$attribute = sprintf( ' %s=\'%s\' crossorigin=\'anonymous\'', static::ATTRIBUTE, esc_attr( $hash ) );
 
 		# Create search and replace strings for stylesheet.
 		$search = ' />';
