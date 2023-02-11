@@ -31,7 +31,7 @@ add_action( 'wp_enqueue_scripts', function() {
  * @return array
  */
 add_filter( 'body_class', function( $classes ) {
-	if ( has_post_thumbnail() ) {
+	if ( is_singular() && has_post_thumbnail() ) {
 		$classes[] = 'has-post-thumbnail';
 		$classes[] = 'post-thumbnail-' . get_post_thumbnail_id();
 	}
@@ -52,8 +52,10 @@ add_filter( 'body_class', function( $classes ) {
  * @return array
  */
 add_filter( 'post_class', function( $classes, $class, $post_id ) {
-	if ( has_post_thumbnail( $post_id ) )
+	if ( has_post_thumbnail( $post_id ) ) {
+		$classes[] = 'has-post-thumbnail';
 		$classes[] = 'post-thumbnail-' . get_post_thumbnail_id( $post_id );
+	}
 
 	return $classes;
 }, 10, 3 );
