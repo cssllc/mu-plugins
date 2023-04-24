@@ -22,6 +22,7 @@ class CSSLLC_LoginBranding {
 	protected function __construct() {
 
 		add_action( 'login_head', array( $this, 'action__login_head' ) );
+		add_filter( 'login_headerurl', array( $this, 'filter__login_headerurl' ) );
 		add_filter( 'login_headertext', array( $this, 'filter__login_headertext' ) );
 
 	}
@@ -35,6 +36,18 @@ class CSSLLC_LoginBranding {
 	 */
 	function action__login_head() {
 		$this->print_styles();
+	}
+	
+	/**
+	 * Filter: login_headerurl
+	 *
+	 * - change header link
+	 *
+	 * @param string $url
+	 * @return string
+	 */
+	function filter__login_headerurl( $url ) {
+		return site_url();
 	}
 
 	/**
@@ -55,7 +68,9 @@ class CSSLLC_LoginBranding {
 	protected function print_styles() {
 		?>
 
-
+		<style>
+		.login h1 a {}
+		</style>
 
 		<?php
 	}
