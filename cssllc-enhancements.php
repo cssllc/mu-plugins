@@ -257,3 +257,15 @@ add_filter( 'wp_nav_menu_args', static function( array $args ) {
 
 	return $args;
 } );
+
+/**
+ * Filter: split_the_query
+ *
+ * Improves queries for sites with external object caching
+ * by only retrieving post IDs from database.
+ *
+ * @see https://www.spacedmonkey.com/2023/01/17/improve-wp_query-performance-if-using-external-object-cache/
+ * @see https://core.trac.wordpress.org/ticket/57296
+ * @return bool
+ */
+add_filter( 'split_the_query', 'wp_using_ext_object_cache' );
