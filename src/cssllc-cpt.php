@@ -72,7 +72,7 @@ abstract class CSSLLC_CPT {
 	 * @uses static::instance()
 	 * @return void
 	 */
-	static function init() : void {
+	public static function init() : void {
 		static $init = array();
 
 		if ( in_array( static::class, $init ) ) {
@@ -89,7 +89,7 @@ abstract class CSSLLC_CPT {
 	 *
 	 * @return CSSLLC_CPT
 	 */
-	static function instance() : CSSLLC_CPT {
+	public static function instance() : CSSLLC_CPT {
 		static $instances = array();
 
 		if ( ! array_key_exists( static::class, $instances ) ) {
@@ -163,7 +163,7 @@ abstract class CSSLLC_CPT {
 	 * @uses get_post_type_object()
 	 * @return WP_Post_Type
 	 */
-	static function object() : WP_Post_Type {
+	public static function object() : WP_Post_Type {
 		$object = get_post_type_object( static::TYPE );
 
 		if ( is_null( $object ) ) {
@@ -243,7 +243,7 @@ abstract class CSSLLC_CPT {
 	 * @uses static::register()
 	 * @return void
 	 */
-	function action__init() : void {
+	public function action__init() : void {
 		if ( 'init' !== current_action() ) {
 			return;
 		}
@@ -259,7 +259,7 @@ abstract class CSSLLC_CPT {
 	 * @uses wp_add_inline_style()
 	 * @return void
 	 */
-	function action__admin_init() : void {
+	public function action__admin_init() : void {
 		if ( 'admin_init' !== current_action() ) {
 			return;
 		}
@@ -288,7 +288,7 @@ abstract class CSSLLC_CPT {
 	 * @param string[] $items
 	 * @return string[]
 	 */
-	function filter__dashboard_glance_items( array $items ) : array {
+	public function filter__dashboard_glance_items( array $items ) : array {
 		if ( 'dashboard_glance_items' !== current_filter() ) {
 			return $items;
 		}
@@ -323,7 +323,7 @@ abstract class CSSLLC_CPT {
 	 * @param mixed[] $bulk_counts
 	 * @return mixed[]
 	 */
-	function filter__bulk_post_updated_messages( array $bulk_messages, array $bulk_counts ) : array {
+	public function filter__bulk_post_updated_messages( array $bulk_messages, array $bulk_counts ) : array {
 		if ( 'bulk_post_updated_messages' !== current_filter() ) {
 			return $bulk_messages;
 		}
@@ -355,7 +355,7 @@ abstract class CSSLLC_CPT {
 	 * @param mixed[] $notices
 	 * @return mixed[]
 	 */
-	function filter__post_updated_messages( array $notices ) : array {
+	public function filter__post_updated_messages( array $notices ) : array {
 		if ( 'post_updated_messages' !== current_filter() ) {
 			return $notices;
 		}

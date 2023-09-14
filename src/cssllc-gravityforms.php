@@ -13,7 +13,7 @@ final class CSSLLC_GravityForms {
 	 *
 	 * @return self
 	 */
-	static function instance() : self {
+	public static function instance() : self {
 		static $instance = null;
 
 		if ( is_null( $instance ) ) {
@@ -96,7 +96,7 @@ final class CSSLLC_GravityForms {
 	 * @param mixed[] $form
 	 * @return string
 	 */
-	function filter__gform_get_form_filter( string $html, array $form ) : string {
+	public function filter__gform_get_form_filter( string $html, array $form ) : string {
 		if (
 			   ! $this->edit()
 			&& ! $this->view()

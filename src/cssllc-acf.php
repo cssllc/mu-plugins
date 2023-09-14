@@ -32,11 +32,12 @@ class CSSLLC_ACF {
 	 *
 	 * @return self
 	 */
-	static function instance() {
+	public static function instance() {
 		static $instance = null;
 
-		if ( is_null( $instance ) )
+		if ( is_null( $instance ) ) {
 			$instance = new self;
+		}
 
 		return $instance;
 	}
@@ -56,7 +57,6 @@ class CSSLLC_ACF {
 		add_filter( 'acf/settings/enable_post_types', '__return_false' );
 		add_filter( 'acf/settings/save_json', array( $this, 'filter__acf_settings_save_json' ) );
 		add_filter( 'acf/settings/load_json', array( $this, 'filter__acf_settings_load_json' ) );
-
 	}
 
 	/**
@@ -67,7 +67,7 @@ class CSSLLC_ACF {
 	protected function maybe_create_directory() {
 		if (
 			! file_exists( $this->directory )
-			||   ! is_dir( $this->directory )
+			|| ! is_dir( $this->directory )
 		) {
 			mkdir( $this->directory );
 		}
@@ -124,5 +124,3 @@ class CSSLLC_ACF {
 }
 
 add_action( 'init', array( 'CSSLLC_ACF', 'init' ), 0 );
-
-?>

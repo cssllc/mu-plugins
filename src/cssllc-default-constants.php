@@ -6,6 +6,11 @@
  * Plugin URI: https://github.com/cssllc/mu-plugins
  */
 
+// phpcs:disable PEAR.Functions.FunctionCallSignature.SpaceBeforeCloseBracket
+// phpcs:disable Generic.Functions.FunctionCallArgumentSpacing.TooMuchSpaceAfterComma
+// phpcs:disable WordPress.WhiteSpace.OperatorSpacing.SpacingBefore
+// phpcs:disable PEAR.Functions.FunctionCallSignature.SpaceAfterOpenBracket
+
 $is_production = ( 'production' === wp_get_environment_type() );
 
 defined( 'WP_DEBUG'            ) || define( 'WP_DEBUG',            ! $is_production );
@@ -18,5 +23,3 @@ defined( 'COMPRESS_CSS'        ) || define( 'COMPRESS_CSS',        ! WP_DEBUG ||
 defined(  'QM_DISABLED'        ) || define(  'QM_DISABLED',        ! WP_DEBUG );
 defined( 'QMX_DISABLED'        ) || define( 'QMX_DISABLED',          QM_DISABLED );
 defined( 'ACF_LITE'            ) || define( 'ACF_LITE',              $is_production );
-
-?>

@@ -13,11 +13,11 @@ defined( 'ABSPATH' ) || die();
  */
 class CSSLLC_ACF__Rule_PageSlug {
 
-	static function init() {
+	public static function init() {
 		static::instance();
 	}
 
-	static function instance() {
+	public static function instance() {
 		static $instance = null;
 
 		if ( is_null( $instance ) ) {
@@ -34,20 +34,21 @@ class CSSLLC_ACF__Rule_PageSlug {
 		add_filter( 'acf/location/rule_match/slug', array( $this, 'filter__acf_location_rule_match_slug' ), 10, 4 );
 	}
 
-	function filter__acf_location_rule_types( array $choices ) {
+	public function filter__acf_location_rule_types( array $choices ) {
 		$choices['Page']['page'] = 'Page ID';
 		$choices['Page']['slug'] = 'Page Slug';
+
 		return $choices;
 	}
 
-	function filter__acf_location_rule_operators_slug( $choices, $rule ) {
+	public function filter__acf_location_rule_operators_slug( $choices, $rule ) {
 		$choices['contains']         = 'contains';
 		$choices['does not contain'] = 'does not contain';
 
 		return $choices;
 	}
 
-	function filter__acf_location_rule_values_slug( $choices ) {
+	public function filter__acf_location_rule_values_slug( $choices ) {
 		$query = new WP_Query( array(
 			'post_type'      => 'page',
 			'posts_per_page' => -1,
@@ -64,7 +65,7 @@ class CSSLLC_ACF__Rule_PageSlug {
 		return $choices;
 	}
 
-	function filter__acf_location_rule_match_slug( $match, $rule, $options, $field_group ) {
+	public function filter__acf_location_rule_match_slug( $match, $rule, $options, $field_group ) {
 		if (
 			! isset( $options['post_type'] )
 			|| 'page' !== $options['post_type']

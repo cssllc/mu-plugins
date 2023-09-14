@@ -31,11 +31,12 @@ class CSSLLC_SubresourceIntegrity {
 	 *
 	 * @return self
 	 */
-	static function instance() {
+	public static function instance() {
 		static $instance = null;
 
-		if ( is_null( $instance ) )
+		if ( is_null( $instance ) ) {
 			$instance = new self;
+		}
 
 		return $instance;
 	}
@@ -49,10 +50,10 @@ class CSSLLC_SubresourceIntegrity {
 	 * @uses  WP_Styles->get_data()
 	 * @return string|false
 	 */
-	static function get_hash( string $handle, bool $is_script = true ) {
+	public static function get_hash( string $handle, bool $is_script = true ) {
 		return $is_script
 			? wp_scripts()->get_data( $handle, static::KEY )
-			:  wp_styles()->get_data( $handle, static::KEY );
+			: wp_styles()->get_data( $handle, static::KEY );
 	}
 
 	/**
@@ -67,29 +68,28 @@ class CSSLLC_SubresourceIntegrity {
 	 * @uses  wp_style_add_data()
 	 * @return void
 	 */
-	static function set_hash( string $handle, string $hash, bool $is_script = true ) {
+	public static function set_hash( string $handle, string $hash, bool $is_script = true ) {
 
 		# Create the instance (if it doesn't exist).
 		static::instance();
 
 		# Check if dependency already has a hash, and alert.
-		if ( !empty( static::get_hash( $handle, $is_script ) ) )
+		if ( ! empty( static::get_hash( $handle, $is_script ) ) ) {
 			trigger_error( sprintf( 'Dependency <code>%s</code> already has an SRI hash.', $handle ) );
+		}
 
 		# Add hash to dependency data.
 		$is_script
 			? wp_script_add_data( $handle, static::KEY, $hash )
-			:  wp_style_add_data( $handle, static::KEY, $hash );
+			: wp_style_add_data( $handle, static::KEY, $hash );
 	}
 
 	/**
 	 * Construct.
 	 */
 	protected function __construct() {
-
 		add_filter( 'script_loader_tag', array( $this, 'filter__script_loader_tag' ), 10, 2 );
-		add_filter(  'style_loader_tag', array( $this,  'filter__style_loader_tag' ), 10, 2 );
-
+		add_filter( 'style_loader_tag', array( $this,  'filter__style_loader_tag' ), 10, 2 );
 	}
 
 	/**
@@ -102,7 +102,7 @@ class CSSLLC_SubresourceIntegrity {
 	 * @uses $this->maybe_add_attribute()
 	 * @return string
 	 */
-	function filter__script_loader_tag( string $tag, string $handle ) {
+	public function filter__script_loader_tag( string $tag, string $handle ) {
 		if ( 'script_loader_tag' !== current_filter() ) {
 			return $tag;
 		}
@@ -120,7 +120,7 @@ class CSSLLC_SubresourceIntegrity {
 	 * @uses $this->maybe_add_attribute()
 	 * @return string
 	 */
-	function filter__style_loader_tag( string $tag, string $handle ) {
+	public function filter__style_loader_tag( string $tag, string $handle ) {
 		if ( 'style_loader_tag' !== current_filter() ) {
 			return $tag;
 		}
@@ -162,20 +162,21 @@ class CSSLLC_SubresourceIntegrity {
 		$hash = static::get_hash( $handle, $is_script );
 
 		# If no hash set, abort.
-		if ( empty( $hash ) )
+		if ( empty( $hash ) ) {
 			return $tag;
+		}
 
 		# Create the attribute HTML.
 		# WordPress uses single quotes, so use single quotes instead of doubles.
 		$attribute = sprintf( ' %s=\'%s\' crossorigin=\'anonymous\'', static::ATTRIBUTE, esc_attr( $hash ) );
 
 		# Create search and replace strings for stylesheet.
-		$search = ' />';
+		$search  = ' />';
 		$replace = $attribute . ' />';
 
 		# Create search and replace strings for script.
 		if ( $is_script ) {
-			$search = '></script>';
+			$search  = '></script>';
 			$replace = $attribute . '></script>';
 		}
 
@@ -184,7 +185,7 @@ class CSSLLC_SubresourceIntegrity {
 
 }
 
-if ( !function_exists( 'wp_set_script_sri' ) ) {
+if ( ! function_exists( 'wp_set_script_sri' ) ) {
 
 	/**
 	 * Global helper for setting SRI for script.
@@ -196,15 +197,16 @@ if ( !function_exists( 'wp_set_script_sri' ) ) {
 	 * @return void
 	 */
 	function wp_set_script_sri( string $handle, string $hash, $condition = true ) {
-		if ( !$condition )
+		if ( ! $condition ) {
 			return;
+		}
 
 		CSSLLC_SubresourceIntegrity::set_hash( $handle, $hash );
 	}
 
 }
 
-if ( !function_exists( 'wp_set_style_sri' ) ) {
+if ( ! function_exists( 'wp_set_style_sri' ) ) {
 
 	/**
 	 * Global helper for setting SRI for stylesheet.
@@ -216,8 +218,9 @@ if ( !function_exists( 'wp_set_style_sri' ) ) {
 	 * @return void
 	 */
 	function wp_set_style_sri( string $handle, string $hash, $condition = true ) {
-		if ( ! $condition )
+		if ( ! $condition ) {
 			return;
+		}
 
 		CSSLLC_SubresourceIntegrity::set_hash( $handle, $hash, false );
 	}
