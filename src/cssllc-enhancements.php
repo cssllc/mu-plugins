@@ -11,13 +11,13 @@
  *
  * - prevent emoji scripts and styles
  */
-add_action( 'wp_enqueue_scripts', function() {
-	remove_action( 'wp_head',             'print_emoji_detection_script', 7 );
+add_action( 'wp_enqueue_scripts', function () {
+	remove_action( 'wp_head', 'print_emoji_detection_script', 7 );
 	remove_action( 'admin_print_scripts', 'print_emoji_detection_script' );
-	remove_action( 'wp_print_styles',     'print_emoji_styles' );
-	remove_action( 'admin_print_styles',  'print_emoji_styles' );
-	remove_action( 'wp_enqueue_scripts',  'wp_enqueue_global_styles' );
-	remove_action( 'wp_body_open',        'wp_global_styles_render_svg_filters' );
+	remove_action( 'wp_print_styles', 'print_emoji_styles' );
+	remove_action( 'admin_print_styles', 'print_emoji_styles' );
+	remove_action( 'wp_enqueue_scripts', 'wp_enqueue_global_styles' );
+	remove_action( 'wp_body_open', 'wp_global_styles_render_svg_filters' );
 }, 0 );
 
 /**
@@ -30,7 +30,7 @@ add_action( 'wp_enqueue_scripts', function() {
  * @uses get_post_thumbnail_id()
  * @return array
  */
-add_filter( 'body_class', function( $classes ) {
+add_filter( 'body_class', function ( $classes ) {
 	if ( is_singular() && has_post_thumbnail() ) {
 		$classes[] = 'has-post-thumbnail';
 		$classes[] = 'post-thumbnail-' . get_post_thumbnail_id();
@@ -51,7 +51,7 @@ add_filter( 'body_class', function( $classes ) {
  * @uses get_post_thumbnail_id()
  * @return array
  */
-add_filter( 'post_class', function( $classes, $class, $post_id ) {
+add_filter( 'post_class', function ( $classes, $class, $post_id ) {
 	if ( has_post_thumbnail( $post_id ) ) {
 		$classes[] = 'has-post-thumbnail';
 		$classes[] = 'post-thumbnail-' . get_post_thumbnail_id( $post_id );
@@ -65,9 +65,10 @@ add_filter( 'post_class', function( $classes, $class, $post_id ) {
  *
  * - add "Empty Link" badge to empty links
  */
-add_action( 'wp_print_footer_scripts', function() {
-	if ( !current_user_can( 'edit_post', get_queried_object_id() ) )
+add_action( 'wp_print_footer_scripts', function () {
+	if ( ! current_user_can( 'edit_post', get_queried_object_id() ) ) {
 		return;
+	}
 	?>
 
 	<style>
@@ -108,11 +109,11 @@ add_action( 'wp_print_footer_scripts', function() {
 			-webkit-text-stroke-width: 0;
 
 			-webkit-transition: opacity 0.2s;
-			        transition: opacity 0.2s;
+			transition: opacity 0.2s;
 
 			-webkit-box-shadow: 2px 2px 5px 0px rgba( 0, 0, 0, 0.5 );
-			   -moz-box-shadow: 2px 2px 5px 0px rgba( 0, 0, 0, 0.5 );
-			        box-shadow: 2px 2px 5px 0px rgba( 0, 0, 0, 0.5 );
+			-moz-box-shadow: 2px 2px 5px 0px rgba( 0, 0, 0, 0.5 );
+			box-shadow: 2px 2px 5px 0px rgba( 0, 0, 0, 0.5 );
 		}
 
 			a[href=""]:hover::before,
@@ -135,14 +136,15 @@ add_action( 'wp_print_footer_scripts', function() {
  * @param string[] $templates
  * @return string[]
  */
-add_filter( 'page_template_hierarchy', function( $templates ) {
+add_filter( 'page_template_hierarchy', function ( $templates ) {
 	$post = get_queried_object();
 
 	# If no post parent, return set templates.
-	if ( empty( $post->post_parent ) )
+	if ( empty( $post->post_parent ) ) {
 		return $templates;
+	}
 
-	$id = $post->post_parent;
+	$id     = $post->post_parent;
 	$parent = get_post( $id );
 
 	if ( ! is_object( $parent ) || ! is_a( $parent, WP_Post::class ) ) {
@@ -151,7 +153,7 @@ add_filter( 'page_template_hierarchy', function( $templates ) {
 
 	$template = get_page_template_slug( $parent );
 	$pagename = $parent->post_name;
-	$prefix = 'page-parent';
+	$prefix   = 'page-parent';
 
 	# Remove and hold onto page.php.
 	$last = array_pop( $templates );
@@ -161,20 +163,23 @@ add_filter( 'page_template_hierarchy', function( $templates ) {
 		if (
 			$template
 			&& 0 === validate_file( $template )
-		)
+		) {
 			$templates[] = $template;
+		}
 
 		if ( $pagename ) {
 			$pagename_decoded = urldecode( $pagename );
 
-			if ( $pagename_decoded !== $pagename )
+			if ( $pagename_decoded !== $pagename ) {
 				$templates[] = "{$prefix}-{$pagename_decoded}.php";
+			}
 
 			$templates[] = "{$prefix}-{$pagename}.php";
 		}
 
-		if ( $id )
+		if ( $id ) {
 			$templates[] = "{$prefix}-{$id}.php";
+		}
 
 	# End copy from get_page_template().
 
@@ -195,12 +200,14 @@ add_filter( 'page_template_hierarchy', function( $templates ) {
  * @param string[] $classes
  * @return string[]
  */
-add_filter( 'body_class', function( array $classes ) : array {
-	if ( 'page' !== get_post_type( get_queried_object_id() ) )
+add_filter( 'body_class', function ( array $classes ) : array {
+	if ( 'page' !== get_post_type( get_queried_object_id() ) ) {
 		return $classes;
+	}
 
-	if ( !in_array( 'page-template-default', $classes ) )
+	if ( ! in_array( 'page-template-default', $classes ) ) {
 		return $classes;
+	}
 
 	$template = get_page_template();
 
@@ -208,22 +215,25 @@ add_filter( 'body_class', function( array $classes ) : array {
 	if ( in_array( $template, array(
 		get_stylesheet_directory() . '/page.php',
 		  get_template_directory() . '/page.php',
-	) ) )
+	) ) ) {
 		return $classes;
+	}
 
 	# If frontpage, get frontpage template.
 	if (
 		empty( $template )
 		&& is_front_page()
-	)
+	) {
 		$template = get_front_page_template();
+	}
 
 	# If no template, bail.
-	if ( empty( $template ) )
+	if ( empty( $template ) ) {
 		return $classes;
+	}
 
 	# Replace default class with specific class.
-	$key = array_search( 'page-template-default', $classes );
+	$key             = array_search( 'page-template-default', $classes );
 	$classes[ $key ] = 'page-template-' . basename( $template, '.php' );
 
 	return $classes;
@@ -238,7 +248,7 @@ add_filter( 'body_class', function( array $classes ) : array {
  *
  * @return array
  */
-add_filter( 'wp_nav_menu_args', static function( array $args ) {
+add_filter( 'wp_nav_menu_args', static function ( array $args ) {
 	if ( empty( $args['theme_location'] ) ) {
 		return $args;
 	}

@@ -10,8 +10,9 @@ class CSSLLC_LoginBranding {
 	static function instance() {
 		static $instance = null;
 
-		if ( is_null( $instance ) )
+		if ( is_null( $instance ) ) {
 			$instance = new self;
+		}
 
 		return $instance;
 	}
@@ -20,11 +21,9 @@ class CSSLLC_LoginBranding {
 	 * Construct.
 	 */
 	protected function __construct() {
-
 		add_action( 'login_head', array( $this, 'action__login_head' ) );
 		add_filter( 'login_headerurl', array( $this, 'filter__login_headerurl' ) );
 		add_filter( 'login_headertext', array( $this, 'filter__login_headertext' ) );
-
 	}
 
 	/**

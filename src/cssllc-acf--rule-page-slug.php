@@ -20,17 +20,18 @@ class CSSLLC_ACF__Rule_PageSlug {
 	static function instance() {
 		static $instance = null;
 
-		if ( is_null( $instance ) )
+		if ( is_null( $instance ) ) {
 			$instance = new self;
+		}
 
 		return $instance;
 	}
 
 	protected function __construct() {
-		add_filter( 'acf/location/rule_types',          array( $this, 'filter__acf_location_rule_types' ) );
+		add_filter( 'acf/location/rule_types', array( $this, 'filter__acf_location_rule_types' ) );
 		add_filter( 'acf/location/rule_operators/slug', array( $this, 'filter__acf_location_rule_operators_slug' ), 10, 2 );
-		add_filter( 'acf/location/rule_values/slug',    array( $this, 'filter__acf_location_rule_values_slug' ) );
-		add_filter( 'acf/location/rule_match/slug',     array( $this, 'filter__acf_location_rule_match_slug' ), 10, 4 );
+		add_filter( 'acf/location/rule_values/slug', array( $this, 'filter__acf_location_rule_values_slug' ) );
+		add_filter( 'acf/location/rule_match/slug', array( $this, 'filter__acf_location_rule_match_slug' ), 10, 4 );
 	}
 
 	function filter__acf_location_rule_types( array $choices ) {
@@ -40,7 +41,7 @@ class CSSLLC_ACF__Rule_PageSlug {
 	}
 
 	function filter__acf_location_rule_operators_slug( $choices, $rule ) {
-		$choices['contains'] = 'contains';
+		$choices['contains']         = 'contains';
 		$choices['does not contain'] = 'does not contain';
 
 		return $choices;
@@ -48,26 +49,28 @@ class CSSLLC_ACF__Rule_PageSlug {
 
 	function filter__acf_location_rule_values_slug( $choices ) {
 		$query = new WP_Query( array(
-			'post_type' => 'page',
+			'post_type'      => 'page',
 			'posts_per_page' => -1,
-			'orderby' => 'title',
-			'order' => 'asc',
+			'orderby'        => 'title',
+			'order'          => 'asc',
 		) );
 
 		$choices = array();
 
-		foreach ( $query->posts as $post )
-			$choices[$post->post_name] = get_the_title( $post );
+		foreach ( $query->posts as $post ) {
+			$choices[ $post->post_name ] = get_the_title( $post );
+		}
 
 		return $choices;
 	}
 
 	function filter__acf_location_rule_match_slug( $match, $rule, $options, $field_group ) {
 		if (
-			!isset( $options['post_type'] )
+			! isset( $options['post_type'] )
 			|| 'page' !== $options['post_type']
-		)
+		) {
 			return $match;
+		}
 
 		$page = get_post( $options['post_id'] );
 
@@ -93,5 +96,3 @@ class CSSLLC_ACF__Rule_PageSlug {
 }
 
 add_action( 'init', array( 'CSSLLC_ACF__Rule_PageSlug', 'init' ), 5 );
-
-?>

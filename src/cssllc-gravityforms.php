@@ -16,8 +16,9 @@ final class CSSLLC_GravityForms {
 	static function instance() : self {
 		static $instance = null;
 
-		if ( is_null( $instance ) )
+		if ( is_null( $instance ) ) {
 			$instance = new self;
+		}
 
 		return $instance;
 	}
@@ -26,9 +27,7 @@ final class CSSLLC_GravityForms {
 	 * Construct.
 	 */
 	protected function __construct() {
-
 		add_filter( 'gform_get_form_filter', array( $this, 'filter__gform_get_form_filter' ), 10, 2 );
-
 	}
 
 	/**
@@ -39,8 +38,9 @@ final class CSSLLC_GravityForms {
 	protected function full() : bool {
 		static $result = null;
 
-		if ( is_null( $result ) )
+		if ( is_null( $result ) ) {
 			$result = current_user_can( 'gform_full_access' );
+		}
 
 		return $result;
 	}
@@ -54,11 +54,13 @@ final class CSSLLC_GravityForms {
 	protected function edit() : bool {
 		static $result = null;
 
-		if ( is_null( $result ) )
+		if ( is_null( $result ) ) {
 			$result = $this->full();
+		}
 
-		if ( empty( $result ) )
+		if ( empty( $result ) ) {
 			$result = current_user_can( 'gravityforms_edit_forms' );
+		}
 
 		return $result;
 	}
@@ -72,11 +74,13 @@ final class CSSLLC_GravityForms {
 	protected function view() : bool {
 		static $result = null;
 
-		if ( is_null( $result ) )
+		if ( is_null( $result ) ) {
 			$result = $this->full();
+		}
 
-		if ( empty( $result ) )
+		if ( empty( $result ) ) {
 			$result = current_user_can( 'gravityforms_view_entries' );
+		}
 
 		return $result;
 	}
@@ -94,10 +98,11 @@ final class CSSLLC_GravityForms {
 	 */
 	function filter__gform_get_form_filter( string $html, array $form ) : string {
 		if (
-			   !$this->edit()
-			&& !$this->view()
-		)
+			   ! $this->edit()
+			&& ! $this->view()
+		) {
 			return $html;
+		}
 
 		$actions = array();
 
@@ -119,7 +124,7 @@ final class CSSLLC_GravityForms {
 			$actions[] = sprintf( '<a href="%s">View entries</a>', $url );
 		}
 
-		return !empty( $actions )
+		return ! empty( $actions )
 			? $html . '<p class="gform-form-actions">' . implode( ' | ', $actions ) . '</p>'
 			: $html;
 	}
@@ -127,5 +132,3 @@ final class CSSLLC_GravityForms {
 }
 
 CSSLLC_GravityForms::instance();
-
-?>

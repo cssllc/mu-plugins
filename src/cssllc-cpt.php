@@ -49,7 +49,7 @@ abstract class CSSLLC_CPT {
 		'has_archive'  => true,
 		'hierarchical' => false,
 
-		'rewrite' => array(
+		'rewrite'      => array(
 			'with_front' => false,
 		),
 
@@ -57,14 +57,14 @@ abstract class CSSLLC_CPT {
 
 
 	/*
-	 ######  ########    ###    ######## ####  ######
-	##    ##    ##      ## ##      ##     ##  ##    ##
-	##          ##     ##   ##     ##     ##  ##
-	 ######     ##    ##     ##    ##     ##  ##
-	      ##    ##    #########    ##     ##  ##
-	##    ##    ##    ##     ##    ##     ##  ##    ##
-	 ######     ##    ##     ##    ##    ####  ######
-	*/
+	 *  ######  ########    ###    ######## ####  ######
+	 * ##    ##    ##      ## ##      ##     ##  ##    ##
+	 * ##          ##     ##   ##     ##     ##  ##
+	 *  ######     ##    ##     ##    ##     ##  ##
+	 *       ##    ##    #########    ##     ##  ##
+	 * ##    ##    ##    ##     ##    ##     ##  ##    ##
+	 *  ######     ##    ##     ##    ##    ####  ######
+	 */
 
 	/**
 	 * Initialize.
@@ -75,8 +75,9 @@ abstract class CSSLLC_CPT {
 	static function init() : void {
 		static $init = array();
 
-		if ( in_array( static::class, $init ) )
+		if ( in_array( static::class, $init ) ) {
 			return;
+		}
 
 		static::instance();
 
@@ -91,8 +92,9 @@ abstract class CSSLLC_CPT {
 	static function instance() : CSSLLC_CPT {
 		static $instances = array();
 
-		if ( ! array_key_exists( static::class, $instances ) )
+		if ( ! array_key_exists( static::class, $instances ) ) {
 			$instances[ static::class ] = new static;
+		}
 
 		return $instances[ static::class ];
 	}
@@ -107,9 +109,9 @@ abstract class CSSLLC_CPT {
 	 */
 	protected static function register() : void {
 		if (
-			   empty( static::TYPE     )
+			   empty( static::TYPE )
 			|| empty( static::SINGULAR )
-			|| empty( static::PLURAL   )
+			|| empty( static::PLURAL )
 		) {
 			trigger_error( sprintf( 'Custom post type `<code>%s</code>` is not setup.', static::TYPE ), E_USER_WARNING );
 			return;
@@ -164,8 +166,9 @@ abstract class CSSLLC_CPT {
 	static function object() : WP_Post_Type {
 		$object = get_post_type_object( static::TYPE );
 
-		if ( is_null( $object ) )
+		if ( is_null( $object ) ) {
 			return new WP_Post_Type( 'does_not_exist' );
+		}
 
 		return $object;
 	}
@@ -189,13 +192,12 @@ abstract class CSSLLC_CPT {
 	protected function __construct() {
 		$this->setup();
 
-		add_action( 'init',       array( $this, 'action__init'       ) );
+		add_action( 'init', array( $this, 'action__init'       ) );
 		add_action( 'admin_init', array( $this, 'action__admin_init' ) );
 
-		add_filter( 'dashboard_glance_items',     array( $this, 'filter__dashboard_glance_items' ) );
+		add_filter( 'dashboard_glance_items', array( $this, 'filter__dashboard_glance_items' ) );
 		add_filter( 'bulk_post_updated_messages', array( $this, 'filter__bulk_post_updated_messages' ), 10, 2 );
-		add_filter( 'post_updated_messages',      array( $this, 'filter__post_updated_messages'  ) );
-
+		add_filter( 'post_updated_messages', array( $this, 'filter__post_updated_messages'  ) );
 	}
 
 	/**
@@ -205,14 +207,21 @@ abstract class CSSLLC_CPT {
 	 * @return void
 	 */
 	protected function setup() : void {
-		if ( !array_key_exists( 'labels',  $this->args ) ) $this->args['labels']  = array();
-		if ( !array_key_exists( 'rewrite', $this->args ) ) $this->args['rewrite'] = array();
+		if ( ! array_key_exists( 'labels', $this->args ) ) {
+			$this->args['labels'] = array();
+		}
 
-		if ( is_array( $this->args['labels'] ) )
+		if ( ! array_key_exists( 'rewrite', $this->args ) ) {
+			$this->args['rewrite'] = array();
+		}
+
+		if ( is_array( $this->args['labels'] ) ) {
 			$this->args['labels'] = wp_parse_args( $this->args['labels'], static::default_labels() );
+		}
 
-		if ( is_array( $this->args['rewrite'] ) )
+		if ( is_array( $this->args['rewrite'] ) ) {
 			$this->args['rewrite'] = wp_parse_args( $this->args['rewrite'], static::$default_args['rewrite'] );
+		}
 	}
 
 
@@ -235,8 +244,9 @@ abstract class CSSLLC_CPT {
 	 * @return void
 	 */
 	function action__init() : void {
-		if ( 'init' !== current_action() )
+		if ( 'init' !== current_action() ) {
 			return;
+		}
 
 		static::register();
 	}
@@ -250,8 +260,9 @@ abstract class CSSLLC_CPT {
 	 * @return void
 	 */
 	function action__admin_init() : void {
-		if ( 'admin_init' !== current_action() )
+		if ( 'admin_init' !== current_action() ) {
 			return;
+		}
 
 		wp_add_inline_style( 'dashicons', '.icon-cpt-' . esc_attr( static::TYPE ) . ':before { content: "' . static::DASHICON_CODE . '" !important; }' );
 	}
@@ -278,16 +289,19 @@ abstract class CSSLLC_CPT {
 	 * @return string[]
 	 */
 	function filter__dashboard_glance_items( array $items ) : array {
-		if ( 'dashboard_glance_items' !== current_filter() )
+		if ( 'dashboard_glance_items' !== current_filter() ) {
 			return $items;
+		}
 
-		if ( !current_user_can( static::object()->cap->edit_posts ) )
+		if ( ! current_user_can( static::object()->cap->edit_posts ) ) {
 			return $items;
+		}
 
 		$count = wp_count_posts( static::TYPE );
 
-		if ( empty( $count->publish ) )
+		if ( empty( $count->publish ) ) {
 			$count->publish = 0;
+		}
 
 		$url = add_query_arg( 'post_type', static::TYPE, 'edit.php' );
 
@@ -310,20 +324,21 @@ abstract class CSSLLC_CPT {
 	 * @return mixed[]
 	 */
 	function filter__bulk_post_updated_messages( array $bulk_messages, array $bulk_counts ) : array {
-		if ( 'bulk_post_updated_messages' !== current_filter() )
+		if ( 'bulk_post_updated_messages' !== current_filter() ) {
 			return $bulk_messages;
+		}
 
 		$singular = strtolower( static::SINGULAR );
-		$plural   = strtolower( static::PLURAL   );
+		$plural   = strtolower( static::PLURAL );
 
-		$bulk_messages[static::TYPE] = array(
-			'updated'   => _n( '%s ' . $singular . ' updated.',                 '%s ' . $plural . ' updated.',                 $bulk_counts['updated']   ),
-			'deleted'   => _n( '%s ' . $singular . ' permanently deleted.',     '%s ' . $plural . ' permanently deleted.',     $bulk_counts['deleted']   ),
-			'trashed'   => _n( '%s ' . $singular . ' moved to the Trash.',      '%s ' . $plural . ' moved to the Trash.',      $bulk_counts['trashed']   ),
+		$bulk_messages[ static::TYPE ] = array(
+			'updated'   => _n( '%s ' . $singular . ' updated.', '%s ' . $plural . ' updated.', $bulk_counts['updated'] ),
+			'deleted'   => _n( '%s ' . $singular . ' permanently deleted.', '%s ' . $plural . ' permanently deleted.', $bulk_counts['deleted'] ),
+			'trashed'   => _n( '%s ' . $singular . ' moved to the Trash.', '%s ' . $plural . ' moved to the Trash.', $bulk_counts['trashed'] ),
 			'untrashed' => _n( '%s ' . $singular . ' restored from the Trash.', '%s ' . $plural . ' restored from the Trash.', $bulk_counts['untrashed'] ),
 		);
 
-		$bulk_messages[static::TYPE]['locked'] = _n(
+		$bulk_messages[ static::TYPE ]['locked'] = _n(
 			'%s ' . $singular . ' not updated, somebody is editing it.',
 			'%s ' . $plural   . ' not updated, somebody is editing them.',
 			$bulk_counts['locked']
@@ -341,13 +356,15 @@ abstract class CSSLLC_CPT {
 	 * @return mixed[]
 	 */
 	function filter__post_updated_messages( array $notices ) : array {
-		if ( 'post_updated_messages' !== current_filter() )
+		if ( 'post_updated_messages' !== current_filter() ) {
 			return $notices;
+		}
 
 		global $post;
 
-		if ( get_post_type( $post ) !== static::TYPE )
+		if ( get_post_type( $post ) !== static::TYPE ) {
 			return $notices;
+		}
 
 		$preview_link_html   = '';
 		$scheduled_link_html = '';
@@ -383,10 +400,10 @@ abstract class CSSLLC_CPT {
 		$scheduled_date = sprintf(
 			__( '%1$s at %2$s' ),
 			date_i18n( _x( 'M j, Y', 'publish box date format' ), strtotime( $post->post_date ) ),
-			date_i18n( _x( 'H:i',    'publish box time format' ), strtotime( $post->post_date ) )
+			date_i18n( _x( 'H:i', 'publish box time format' ), strtotime( $post->post_date ) )
 		);
 
-		$notices[static::TYPE] = array(
+		$notices[ static::TYPE ] = array(
 			 0 => '', // Unused. Messages start at index 1.
 			 1 => __( static::SINGULAR . ' updated.' ) . $view_link_html,
 			 2 => __( 'Custom field updated.' ),
