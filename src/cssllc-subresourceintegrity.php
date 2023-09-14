@@ -223,6 +223,3 @@ if ( !function_exists( 'wp_set_style_sri' ) ) {
 	}
 
 }
-
-
-?>

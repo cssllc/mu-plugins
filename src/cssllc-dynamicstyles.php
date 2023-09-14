@@ -32,11 +32,12 @@ class DynamicStyles {
 	 *
 	 * @return self
 	 */
-	static function instance() {
+	public static function instance() {
 		static $instance = null;
 
-		if ( is_null( $instance ) )
+		if ( is_null( $instance ) ) {
 			$instance = new self;
+		}
 
 		return $instance;
 	}
@@ -48,17 +49,18 @@ class DynamicStyles {
 	 * @param null|string $key
 	 * @return string
 	 */
-	static function add( string $style, string $key = null ) {
+	public static function add( string $style, string $key = null ) {
 		if ( is_null( $key ) ) {
 			$key = microtime( true );
 
-			while ( isset( static::$todo[ ( string ) $key ] ) )
+			while ( isset( static::$todo[ ( string ) $key ] ) ) {
 				$key += 0.00001;
+			}
 		}
 
 		$key = ( string ) $key;
 
-		static::$todo[$key] = $style;
+		static::$todo[ $key ] = $style;
 		return $key;
 	}
 
@@ -67,7 +69,7 @@ class DynamicStyles {
 	 *
 	 * @return void
 	 */
-	static function print() {
+	public static function print() {
 		if ( empty( static::$todo ) ) {
 			return;
 		}
@@ -90,7 +92,7 @@ class DynamicStyles {
 	 * Construct.
 	 */
 	protected function __construct() {
-		add_action( 'wp_print_scripts',        array( __CLASS__, 'print' ) );
+		add_action( 'wp_print_scripts', array( __CLASS__, 'print' ) );
 		add_action( 'wp_print_footer_scripts', array( __CLASS__, 'print' ) );
 	}
 
@@ -98,5 +100,3 @@ class DynamicStyles {
 
 # Initialize.
 DynamicStyles::instance();
-
-?>
