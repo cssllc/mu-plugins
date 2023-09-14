@@ -13,8 +13,8 @@ if ( !function_exists( 'create_post_type_labels' ) ) {
 	*
 	* @param string $singular
 	* @param string $plural
-	* @param array $overrides
-	* @return array
+	* @param string[] $overrides
+	* @return string[]
 	*/
 	function create_post_type_labels( string $singular, string $plural, array $overrides = array() ) {
 		return array_filter( wp_parse_args( $overrides, array(
@@ -60,8 +60,8 @@ if ( !function_exists( 'create_taxonomy_labels' ) ) {
 	 *
 	 * @param string $singular
 	 * @param string $plural
-	 * @param array $overrides
-	 * @return array
+	 * @param string[] $overrides
+	 * @return string[]
 	 */
 	function create_taxonomy_labels( string $singular, string $plural, array $overrides = array() ) {
 		return array_filter( wp_parse_args( $overrides, array(
@@ -98,8 +98,9 @@ if ( !function_exists( 'prerender' ) ) {
 	 * Add pre-render link tags for specified URLs.
 	 *
 	 * @see wp_resource_hints()
-	 * @param string|array $prerender_urls
+	 * @param string|string[] $prerender_urls
 	 * @uses wp_http_validate_url()
+	 * @return void
 	 */
 	function prerender( $prerender_urls ) {
 
@@ -154,7 +155,7 @@ if ( !function_exists( 'target' ) ) {
 	 * @param bool $echo
 	 * @return string
 	 */
-	function target( $target, string $rel = null, bool $echo = true ) {
+	function target( $target, $rel = null, bool $echo = true ) {
 		if (
 			    empty( $target )
 			|| !is_string( $target )
@@ -177,12 +178,13 @@ if ( !function_exists( 'target' ) ) {
 
 		}
 
-		# Return attribute(s).
-		if ( !$echo )
-			return $return;
-
 		# Print attribute(s).
-		echo $return;
+		if ( $echo ) {
+			echo $return;
+		}
+
+		# Return attribute(s).
+		return $return;
 	}
 
 }
@@ -219,13 +221,108 @@ if ( !function_exists( 'make_phone_number_clickable' ) ) {
 		if ( $antispambot )
 			$markup = antispambot( $markup );
 
-		$digits = preg_replace( '/[^\+0-9]/', '', $phone_number );
+		$digits = (string) preg_replace( '/[^\+0-9]/', '', $phone_number );
 		$markup = sprintf( '<a href="tel:%s">%s</a>',
 			esc_attr( antispambot( $digits ) ),
 			$markup
 		);
 
 		return $markup;
+	}
+
+}
+
+if ( ! function_exists( 'acf_link' ) ) {
+
+	/**
+	 * Return link from ACF Link field value.
+	 *
+	 * @param array<string, string> $link
+	 * @param array<string, string> $attributes
+	 * @return string
+	 */
+	function acf_link( array $link, array $attributes = array() ) : string {
+		if ( empty( $link ) || ! is_array( $link ) ) {
+			return '';
+		}
+
+		$attributes = wp_parse_args( $attributes, array(
+			'href'   => esc_url( $link['url'] ),
+			'target' => target( $link['target'], null, false ),
+		) );
+
+		$attributes_string = '';
+
+		foreach ( $attributes as $attribute => $value ) {
+			if ( ! is_string( $value ) ) {
+				continue;
+			}
+
+			$attributes_string .= sprintf( ' %s="%s"', $attribute, $value );
+		}
+
+		return sprintf( '<a%s>%s</a>', $attributes_string, $link['title'] );
+	}
+
+}
+
+if ( ! function_exists( 'wp_deep_parse_args' ) ) {
+
+	/**
+	 * Recursive version of `wp_parse_args()` for multidimensional arrays.
+	 *
+	 * @param mixed[] $args
+	 * @param mixed[] $defaults
+	 * @return mixed[]
+	 */
+	function wp_deep_parse_args( array $args, array $defaults ) : array {
+		$args = wp_parse_args( $args, $defaults );
+
+		foreach ( $args as $key => $value ) {
+			if ( ! is_array( $value ) || ! isset( $defaults[ $key ] ) ) {
+				continue;
+			}
+
+			if ( ! is_array( $defaults[ $key ] ) ) {
+				trigger_error( sprintf(
+					'Expected default value of `%s` to be an array, is an %s.',
+					$key,
+					gettype( $defaults[ $key ] )
+				), E_USER_WARNING );
+
+				continue;
+			}
+
+			if ( empty( $defaults[ $key ] ) ) {
+				continue;
+			}
+
+			$args[ $key ] = wp_deep_parse_args( $value, $defaults[ $key ] );
+		}
+
+		return $args;
+	}
+}
+
+if ( ! function_exists( 'qm_debug' ) ) {
+
+	function qm_debug( $value ) {
+		do_action( 'qm/debug', $value );
+	}
+
+}
+
+if ( ! function_exists( 'array_filter_deep' ) ) {
+
+	function array_filter_deep( $value ) {
+		if ( ! is_array( $value ) ) {
+			return $value;
+		}
+
+		$value = array_map( 'array_filter_deep', $value );
+		$value = array_filter( $value );
+
+		return $value;
 	}
 
 }

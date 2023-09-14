@@ -142,9 +142,13 @@ add_filter( 'page_template_hierarchy', function( $templates ) {
 	if ( empty( $post->post_parent ) )
 		return $templates;
 
-	# Store data.
 	$id = $post->post_parent;
 	$parent = get_post( $id );
+
+	if ( ! is_object( $parent ) || ! is_a( $parent, WP_Post::class ) ) {
+		return $templates;
+	}
+
 	$template = get_page_template_slug( $parent );
 	$pagename = $parent->post_name;
 	$prefix = 'page-parent';
@@ -251,7 +255,10 @@ add_filter( 'wp_nav_menu_args', static function( array $args ) {
 	}
 
 	$args['container_class'] .= sprintf( ' menu-location-%s-container', $args['theme_location'] );
-	$args['container_class'] .= sprintf( ' menu-%s-container', $menu->slug );
+
+	if ( ! empty( $menu ) ) {
+		$args['container_class'] .= sprintf( ' menu-%s-container', $menu->slug );
+	}
 
 	$args['container_class'] = trim( $args['container_class'] );
 

@@ -48,8 +48,6 @@ if ( !function_exists( 'cssllc_require_set_environment_type' ) ) {
 			  'Explicitly define a valid environment type to activate the site. <br />'
 			. 'See <code>wp_get_environment_type()</code> or <a href="https://make.wordpress.org/core/2020/07/24/new-wp_get_environment_type-function-in-wordpress-5-5/">Make WordPress Core article</a> for more info.'
 		);
-
-		exit;
 	}
 
 }
@@ -120,7 +118,7 @@ add_action( 'wp_dashboard_setup', function() : void {
 
 				# WC_SQUARE_ENABLE_STAGING constant
 				. '<li>Set constant to disable Square payments</li>'
-				
+
 				# `pre_option_blog_public` filters
 				. '<li>Prevent search engine indexing</li>'
 
@@ -138,7 +136,7 @@ add_action( 'wp_dashboard_setup', function() : void {
 
 				# `user_has_cap` filter
 				. '<li>Always show Query Monitor output on frontend</li>'
-				
+
 				# 'action_scheduler_run_queue' action
 				. '<li>Disabled Action Scheduler default runner</li>'
 
@@ -276,11 +274,11 @@ add_filter( 'user_has_cap', function( array $allcaps ) : array {
 $change_asset_versions = function() : void {
 	foreach ( wp_scripts()->registered as $handle => &$script )
 		if ( 'init' === $script->ver )
-			$script->ver = WP_START_TIMESTAMP;
+			$script->ver = constant( 'WP_START_TIMESTAMP' );
 
 	foreach ( wp_styles()->registered as $handle => &$style )
 		if ( 'init' === $style->ver )
-			$style->ver = WP_START_TIMESTAMP;
+			$style->ver = constant( 'WP_START_TIMESTAMP' );
 };
 
 add_action( 'send_headers', $change_asset_versions, 5 );
@@ -299,7 +297,7 @@ add_action( 'init', static function() : void {
 	if ( ! class_exists( 'ActionScheduler' ) ) {
 		return;
 	}
-	
+
 	remove_action( 'action_scheduler_run_queue', array( ActionScheduler::runner(), 'run' ) );
 } );
 

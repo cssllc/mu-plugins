@@ -65,6 +65,7 @@ class CSSLLC_SubresourceIntegrity {
 	 * @uses static::get_hash()
 	 * @uses wp_script_add_data()
 	 * @uses  wp_style_add_data()
+	 * @return void
 	 */
 	static function set_hash( string $handle, string $hash, bool $is_script = true ) {
 
@@ -141,7 +142,7 @@ class CSSLLC_SubresourceIntegrity {
 		# Provide switch for easy third-party control.
 		$add = in_array( wp_get_environment_type(), array( 'staging', 'production' ) );
 		$add = apply_filters( 'add_subresource_integrity', $add, $handle, $is_script );
-		$add = apply_filters( sprintf( 
+		$add = apply_filters( sprintf(
 			'add_subresource_integrity_%s_%s',
 			$handle,
 			$is_script ? 'script' : 'style'
@@ -192,6 +193,7 @@ if ( !function_exists( 'wp_set_script_sri' ) ) {
 	 * @param string $hash
 	 * @param bool $condition
 	 * @uses CSSLLC_SubresourceIntegrity::set_hash()
+	 * @return void
 	 */
 	function wp_set_script_sri( string $handle, string $hash, $condition = true ) {
 		if ( !$condition )
@@ -209,10 +211,12 @@ if ( !function_exists( 'wp_set_style_sri' ) ) {
 	 *
 	 * @param string $handle
 	 * @param string $hash
+	 * @param bool $condition
 	 * @uses CSSLLC_SubresourceIntegrity::set_hash()
+	 * @return void
 	 */
 	function wp_set_style_sri( string $handle, string $hash, $condition = true ) {
-		if ( !$condition )
+		if ( ! $condition )
 			return;
 
 		CSSLLC_SubresourceIntegrity::set_hash( $handle, $hash, false );

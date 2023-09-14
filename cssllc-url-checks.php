@@ -175,6 +175,10 @@ class CSSLLC_URL_Checks {
 				continue;
 			}
 
+			if ( 'publish' !== get_post_status( $row->post_id ) ) {
+				continue;
+			}
+
 			$urls[ $key ] = get_permalink( $row->post_id );
 		}
 

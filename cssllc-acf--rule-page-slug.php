@@ -13,6 +13,10 @@ defined( 'ABSPATH' ) || die();
  */
 class CSSLLC_ACF__Rule_PageSlug {
 
+	static function init() {
+		static::instance();
+	}
+
 	static function instance() {
 		static $instance = null;
 
@@ -88,6 +92,6 @@ class CSSLLC_ACF__Rule_PageSlug {
 
 }
 
-add_action( 'init', array( 'CSSLLC_ACF__Rule_PageSlug', 'instance' ), 5 );
+add_action( 'init', array( 'CSSLLC_ACF__Rule_PageSlug', 'init' ), 5 );
 
 ?>

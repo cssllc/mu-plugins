@@ -14,9 +14,18 @@ defined( 'ABSPATH' ) || die();
 class CSSLLC_ACF {
 
 	/**
-	 * @var null|string
+	 * @var string
 	 */
 	protected $directory;
+
+	/**
+	 * Initialize.
+	 *
+	 * @return void
+	 */
+	public static function init() {
+		static::instance();
+	}
 
 	/**
 	 * Get instance.
@@ -52,22 +61,26 @@ class CSSLLC_ACF {
 
 	/**
 	 * Maybe create directory for ACF JSON.
+	 *
+	 * @return void
 	 */
 	protected function maybe_create_directory() {
 		if (
-			!file_exists( $this->directory )
-			||   !is_dir( $this->directory )
-		)
+			! file_exists( $this->directory )
+			||   ! is_dir( $this->directory )
+		) {
 			mkdir( $this->directory );
+		}
 
 		$filepath = $this->directory . '/index.php';
 
-		if ( file_exists( $filepath ) )
+		if ( file_exists( $filepath ) ) {
 			return;
+		}
 
 		file_put_contents( $filepath, "<?php\n/**\n * Silence is golden.\n *\n * Directory contains ACF JSON export files.\n */" );
 	}
-	
+
 	/**
 	 * Action: acf/input/admin_head
 	 *
@@ -97,16 +110,19 @@ class CSSLLC_ACF {
 	 *
 	 * - specify directories to look for ACF JSON
 	 *
-	 * @param array $paths
-	 * @uses filter__acf_settings_save_json()
-	 * @return array
+	 * @param string[] $paths
+	 * @return string[]
 	 */
 	function filter__acf_settings_load_json( $paths ) {
-		return array( $this->directory );
+		$pattern = trailingslashit( get_template_directory() ) . 'template-*/';
+		$paths   = glob( $pattern, GLOB_ONLYDIR );
+		$paths[] = $this->directory;
+
+		return $paths;
 	}
 
 }
 
-add_action( 'init', array( 'CSSLLC_ACF', 'instance' ), 0 );
+add_action( 'init', array( 'CSSLLC_ACF', 'init' ), 0 );
 
 ?>

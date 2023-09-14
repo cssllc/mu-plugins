@@ -27,7 +27,7 @@ final class CSSLLC_GravityForms {
 	 */
 	protected function __construct() {
 
-		add_filter( 'gform_get_form_filter', array( $this, 'action__gform_get_form_filter' ), 10, 2 );
+		add_filter( 'gform_get_form_filter', array( $this, 'filter__gform_get_form_filter' ), 10, 2 );
 
 	}
 
@@ -89,7 +89,7 @@ final class CSSLLC_GravityForms {
 	 * @uses $this->edit()
 	 * @uses $this->view()
 	 * @param string $html
-	 * @param array $form
+	 * @param mixed[] $form
 	 * @return string
 	 */
 	function filter__gform_get_form_filter( string $html, array $form ) : string {

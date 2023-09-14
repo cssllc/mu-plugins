@@ -19,9 +19,12 @@ class DynamicStyles {
 
 	/**
 	 * @var string[] $todo Styles to print.
-	 * @var string[] $done Styles printed.
 	 */
 	protected static $todo = array();
+
+	/**
+	 * @var string[] $done Styles printed.
+	 */
 	protected static $done = array();
 
 	/**
@@ -61,15 +64,18 @@ class DynamicStyles {
 
 	/**
 	 * Print todo styles.
+	 *
+	 * @return void
 	 */
 	static function print() {
-		if ( empty( static::$todo ) )
+		if ( empty( static::$todo ) ) {
 			return;
+		}
 
 		do_action( 'dynamic-styles/before_printing', static::$todo );
 		do_action( 'qm/start', ( $timer = __METHOD__ . '()' ) );
 
-		echo '<style data-dynamicstyles="' . esc_attr( count( static::$todo ) ) . '">' . "\n" .
+		echo '<style data-dynamicstyles="' . count( static::$todo ) . '">' . "\n" .
 			implode( "\n", static::$todo ) . "\n".
 		'</style>' . "\n";
 

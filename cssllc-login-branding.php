@@ -33,11 +33,12 @@ class CSSLLC_LoginBranding {
 	 * - print styles
 	 *
 	 * @uses $this->print_styles()
+	 * @return void
 	 */
 	function action__login_head() {
 		$this->print_styles();
 	}
-	
+
 	/**
 	 * Filter: login_headerurl
 	 *
@@ -64,6 +65,7 @@ class CSSLLC_LoginBranding {
 	 * Print login styles.
 	 *
 	 * @link https://crstauf.github.io/WordPress-Login-Styles-Generator/ Generator.
+	 * @return void
 	 */
 	protected function print_styles() {
 		?>

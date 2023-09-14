@@ -37,14 +37,14 @@ abstract class CSSLLC_CPT {
 	const DASHICON_CODE = '';
 
 	/**
-	 * @var array Arguments for custom post type.
+	 * @var mixed[] Arguments for custom post type.
 	 */
 	protected $args = array();
 
 	/**
-	 * @var array Default arguments for custom post type.
+	 * @var mixed[] Default arguments for custom post type.
 	 */
-	private static $default_args = array(
+	protected static $default_args = array(
 		'public'       => true,
 		'has_archive'  => true,
 		'hierarchical' => false,
@@ -86,9 +86,9 @@ abstract class CSSLLC_CPT {
 	/**
 	 * Create or get instance.
 	 *
-	 * @return _CSSLLC_CPT
+	 * @return CSSLLC_CPT
 	 */
-	static function instance() : _CSSLLC_CPT {
+	static function instance() : CSSLLC_CPT {
 		static $instances = array();
 
 		if ( ! array_key_exists( static::class, $instances ) )
@@ -123,7 +123,7 @@ abstract class CSSLLC_CPT {
 	 * Generate labels for post type.
 	 *
 	 * @link https://developer.wordpress.org/reference/functions/get_post_type_labels/ List of labels.
-	 * @return array
+	 * @return array<string, string>
 	 */
 	protected static function default_labels() : array {
 		return array(
@@ -305,9 +305,9 @@ abstract class CSSLLC_CPT {
 	 *
 	 * Add messages for bulk updating CPT posts.
 	 *
-	 * @param array $bulk_messages
-	 * @param array $bulk_counts
-	 * @return array
+	 * @param mixed[] $bulk_messages
+	 * @param mixed[] $bulk_counts
+	 * @return mixed[]
 	 */
 	function filter__bulk_post_updated_messages( array $bulk_messages, array $bulk_counts ) : array {
 		if ( 'bulk_post_updated_messages' !== current_filter() )
@@ -337,8 +337,8 @@ abstract class CSSLLC_CPT {
 	 *
 	 * Add messages for updating CPT post.
 	 *
-	 * @param array $notices
-	 * @return array
+	 * @param mixed[] $notices
+	 * @return mixed[]
 	 */
 	function filter__post_updated_messages( array $notices ) : array {
 		if ( 'post_updated_messages' !== current_filter() )
@@ -353,17 +353,20 @@ abstract class CSSLLC_CPT {
 		$scheduled_link_html = '';
 		$view_link_html      = '';
 
-		$permalink   = get_permalink( $post );
-		$preview_url = get_preview_post_link( $post );
-
 		if ( is_post_type_viewable( static::object() ) ) {
+			$permalink   = get_permalink( $post );
+			$preview_url = get_preview_post_link( $post );
+		}
 
+		if ( ! empty( $preview_url ) ) {
 			$preview_link_html = sprintf(
 				' <a href="%1$s">%2$s</a>',
 				esc_url( $preview_url ),
 				__( 'Preview ' . strtolower( static::SINGULAR ) )
 			);
+		}
 
+		if ( ! empty( $permalink ) ) {
 			$scheduled_link_html = sprintf(
 				' <a href="%1$s">%2$s</a>',
 				esc_url( $permalink ),
@@ -375,7 +378,6 @@ abstract class CSSLLC_CPT {
 				esc_url( $permalink ),
 				__( 'View ' . strtolower( static::SINGULAR ) )
 			);
-
 		}
 
 		$scheduled_date = sprintf(
@@ -402,5 +404,3 @@ abstract class CSSLLC_CPT {
 	}
 
 }
-
-?>
