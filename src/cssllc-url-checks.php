@@ -184,6 +184,7 @@ class CSSLLC_URL_Checks {
 		}
 
 		$urls = array_values( $urls );
+		$urls = array_filter( $urls );
 
 		return $urls;
 	}

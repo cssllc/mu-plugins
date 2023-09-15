@@ -1,8 +1,8 @@
 {
-  "name": "om-devteam/lp.hazlnut.com",
-  "description": "Hazlnut LP WordPress Site",
+  "name": "cssllc/mu-plugins",
+  "description": "CSSLLC MU-Plugins",
   "require-dev": {
-    "automattic/vipwpcs": "^2.3",
+    "automattic/vipwpcs": "^3.0",
     "szepeviktor/phpstan-wordpress": "^1.1",
     "phpstan/extension-installer": "^1.1",
     "php-stubs/acf-pro-stubs": "^6.0",

@@ -51,9 +51,15 @@ class CSSLLC_SubresourceIntegrity {
 	 * @return string|false
 	 */
 	public static function get_hash( string $handle, bool $is_script = true ) {
-		return $is_script
+		$hash = $is_script
 			? wp_scripts()->get_data( $handle, static::KEY )
 			: wp_styles()->get_data( $handle, static::KEY );
+
+		if ( ! is_string( $hash ) ) {
+			return false;
+		}
+
+		return $hash;
 	}
 
 	/**

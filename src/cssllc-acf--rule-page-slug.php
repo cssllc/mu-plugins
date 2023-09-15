@@ -13,10 +13,16 @@ defined( 'ABSPATH' ) || die();
  */
 class CSSLLC_ACF__Rule_PageSlug {
 
+	/**
+	 * @return void
+	 */
 	public static function init() {
 		static::instance();
 	}
 
+	/**
+	 * @return self
+	 */
 	public static function instance() {
 		static $instance = null;
 
@@ -29,11 +35,15 @@ class CSSLLC_ACF__Rule_PageSlug {
 
 	protected function __construct() {
 		add_filter( 'acf/location/rule_types', array( $this, 'filter__acf_location_rule_types' ) );
-		add_filter( 'acf/location/rule_operators/slug', array( $this, 'filter__acf_location_rule_operators_slug' ), 10, 2 );
+		add_filter( 'acf/location/rule_operators/slug', array( $this, 'filter__acf_location_rule_operators_slug' ) );
 		add_filter( 'acf/location/rule_values/slug', array( $this, 'filter__acf_location_rule_values_slug' ) );
-		add_filter( 'acf/location/rule_match/slug', array( $this, 'filter__acf_location_rule_match_slug' ), 10, 4 );
+		add_filter( 'acf/location/rule_match/slug', array( $this, 'filter__acf_location_rule_match_slug' ), 10, 3 );
 	}
 
+	/**
+	 * @param array<string, array<string, string>> $choices
+	 * @return array<string, array<string, string>>
+	 */
 	public function filter__acf_location_rule_types( array $choices ) {
 		$choices['Page']['page'] = 'Page ID';
 		$choices['Page']['slug'] = 'Page Slug';
@@ -41,14 +51,22 @@ class CSSLLC_ACF__Rule_PageSlug {
 		return $choices;
 	}
 
-	public function filter__acf_location_rule_operators_slug( $choices, $rule ) {
+	/**
+	 * @param array<string, string> $choices
+	 * @return array<string, string>
+	 */
+	public function filter__acf_location_rule_operators_slug( array $choices ) {
 		$choices['contains']         = 'contains';
 		$choices['does not contain'] = 'does not contain';
 
 		return $choices;
 	}
 
-	public function filter__acf_location_rule_values_slug( $choices ) {
+	/**
+	 * @param array<string, string> $choices
+	 * @return array<string, string>
+	 */
+	public function filter__acf_location_rule_values_slug( array $choices ) {
 		$query = new WP_Query( array(
 			'post_type'      => 'page',
 			'posts_per_page' => -1,
@@ -59,13 +77,23 @@ class CSSLLC_ACF__Rule_PageSlug {
 		$choices = array();
 
 		foreach ( $query->posts as $post ) {
+			if ( ! is_object( $post ) || ! is_a( $post, WP_Post::class ) ) {
+				continue;
+			}
+
 			$choices[ $post->post_name ] = get_the_title( $post );
 		}
 
 		return $choices;
 	}
 
-	public function filter__acf_location_rule_match_slug( $match, $rule, $options, $field_group ) {
+	/**
+	 * @param bool $match
+	 * @param array<string, mixed> $rule
+	 * @param array<mixed> $options
+	 * @return bool
+	 */
+	public function filter__acf_location_rule_match_slug( $match, $rule, $options ) {
 		if (
 			! isset( $options['post_type'] )
 			|| 'page' !== $options['post_type']
@@ -74,6 +102,10 @@ class CSSLLC_ACF__Rule_PageSlug {
 		}
 
 		$page = get_post( $options['post_id'] );
+
+		if ( is_null( $page ) || ! is_string( $rule['value'] ) ) {
+			return false;
+		}
 
 		switch ( $rule['operator'] ) {
 

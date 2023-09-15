@@ -82,7 +82,6 @@
     <rule ref="WordPressVIPMinimum">
         <severity>3</severity>
         <exclude name="WordPressVIPMinimum.Constants.ConstantString.NotCheckingConstantName"/>
-        <exclude name="WordPressVIPMinimum.Variables.VariableAnalysis"/>
     </rule>
 
     <!-- Generic -->

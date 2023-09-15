@@ -12,6 +12,8 @@ defined( 'ABSPATH' ) || die();
 
 /**
  * Abstract class for custom post types.
+ *
+ * @phpstan-consistent-constructor
  */
 abstract class CSSLLC_CPT {
 
@@ -219,6 +221,10 @@ abstract class CSSLLC_CPT {
 			$this->args['labels'] = wp_parse_args( $this->args['labels'], static::default_labels() );
 		}
 
+		if ( ! is_array( static::$default_args['rewrite'] ) ) {
+			static::$default_args['rewrite'] = array();
+		}
+
 		if ( is_array( $this->args['rewrite'] ) ) {
 			$this->args['rewrite'] = wp_parse_args( $this->args['rewrite'], static::$default_args['rewrite'] );
 		}
@@ -332,16 +338,16 @@ abstract class CSSLLC_CPT {
 		$plural   = strtolower( static::PLURAL );
 
 		$bulk_messages[ static::TYPE ] = array(
-			'updated'   => _n( '%s ' . $singular . ' updated.', '%s ' . $plural . ' updated.', $bulk_counts['updated'] ),
-			'deleted'   => _n( '%s ' . $singular . ' permanently deleted.', '%s ' . $plural . ' permanently deleted.', $bulk_counts['deleted'] ),
-			'trashed'   => _n( '%s ' . $singular . ' moved to the Trash.', '%s ' . $plural . ' moved to the Trash.', $bulk_counts['trashed'] ),
-			'untrashed' => _n( '%s ' . $singular . ' restored from the Trash.', '%s ' . $plural . ' restored from the Trash.', $bulk_counts['untrashed'] ),
+			'updated'   => _n( '%s ' . $singular . ' updated.', '%s ' . $plural . ' updated.', absint( $bulk_counts['updated'] ) ),
+			'deleted'   => _n( '%s ' . $singular . ' permanently deleted.', '%s ' . $plural . ' permanently deleted.', absint( $bulk_counts['deleted'] ) ),
+			'trashed'   => _n( '%s ' . $singular . ' moved to the Trash.', '%s ' . $plural . ' moved to the Trash.', absint( $bulk_counts['trashed'] ) ),
+			'untrashed' => _n( '%s ' . $singular . ' restored from the Trash.', '%s ' . $plural . ' restored from the Trash.', absint( $bulk_counts['untrashed'] ) ),
 		);
 
 		$bulk_messages[ static::TYPE ]['locked'] = _n(
 			'%s ' . $singular . ' not updated, somebody is editing it.',
 			'%s ' . $plural   . ' not updated, somebody is editing them.',
-			$bulk_counts['locked']
+			absint( $bulk_counts['locked'] )
 		);
 
 		return $bulk_messages;

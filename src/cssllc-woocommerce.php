@@ -52,7 +52,7 @@ final class CSSLLC_WooCommerce {
 
 		$title = sprintf(
 			'<span class="ab-label count-%1$s" aria-hidden="true">%2$s</span><span class="screen-reader-text">%3$s</span>',
-			esc_attr( $count ),
+			esc_attr( (string) $count ),
 			number_format_i18n( $count ),
 			$text
 		);
@@ -69,7 +69,8 @@ final class CSSLLC_WooCommerce {
 			$screen = get_current_screen();
 
 			if (
-				   'shop_order' === $screen->id
+				! is_null( $screen )
+				&& 'shop_order' === $screen->id
 				&& 'post' === $screen->base
 			) {
 				$current_id = $_GET['post'];
@@ -119,6 +120,10 @@ final class CSSLLC_WooCommerce {
 	protected function count_orders() : int {
 		global $wpdb;
 
+		if ( ! function_exists( 'wc_get_order_types' ) ) {
+			return 0;
+		}
+
 		$values       = wc_get_order_types( 'order-count' );
 		$placeholders = implode( ', ', array_fill( 0, count( $values ), '%s' ) );
 		$start        = strtotime( 'midnight', time() + ( HOUR_IN_SECONDS * get_option( 'gmt_offset' ) ) );
@@ -165,7 +170,7 @@ final class CSSLLC_WooCommerce {
 		}
 
 		<?php
-		return ob_get_clean();
+		return (string) ob_get_clean();
 	}
 
 	/**
@@ -209,7 +214,7 @@ final class CSSLLC_WooCommerce {
 		} );
 
 		<?php
-		return ob_get_clean();
+		return (string) ob_get_clean();
 	}
 
 	/**
@@ -257,7 +262,7 @@ final class CSSLLC_WooCommerce {
 		}
 
 		<?php
-		return ob_get_clean();
+		return (string) ob_get_clean();
 	}
 
 
@@ -343,15 +348,19 @@ final class CSSLLC_WooCommerce {
 	 *
 	 * - add count of CPTs to 'At a Glance' dashboard widget.
 	 *
-	 * @param array $items
+	 * @param array<string, string> $items
 	 *
-	 * @return array
+	 * @return array<string, string>
 	 */
 	public function filter__dashboard_glance_items( $items ) {
 		foreach ( array( 'product', 'shop_order', 'shop_coupon' ) as $post_type ) {
 			$object = get_post_type_object( $post_type );
 			$count  = wp_count_posts( $post_type );
 			$url    = add_query_arg( 'post_type', $post_type, admin_url( 'edit.php' ) );
+
+			if ( is_null( $object ) ) {
+				continue;
+			}
 
 			$items[ 'count_' . $post_type ] = sprintf(
 				'<a class="icon-wc-%1$s" href="%2$s">%3$s %4$s</a>',

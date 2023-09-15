@@ -88,7 +88,7 @@ class CSSLLC_ACF {
 	 *
 	 * @return void
 	 */
-	function action__acf_input_admin_head() : void {
+	public function action__acf_input_admin_head() : void {
 		echo '<style>.hide-label .acf-label { display: none; }</style>';
 	}
 
@@ -101,7 +101,7 @@ class CSSLLC_ACF {
 	 * @param string $path
 	 * @return string
 	 */
-	function filter__acf_settings_save_json( $path = '' ) {
+	public function filter__acf_settings_save_json( $path = '' ) {
 		return $this->directory;
 	}
 
@@ -113,9 +113,11 @@ class CSSLLC_ACF {
 	 * @param string[] $paths
 	 * @return string[]
 	 */
-	function filter__acf_settings_load_json( $paths ) {
-		$pattern = trailingslashit( get_template_directory() ) . 'template-*/';
-		$paths   = glob( $pattern, GLOB_ONLYDIR );
+	public function filter__acf_settings_load_json( $paths ) {
+		if ( ! is_array( $paths ) ) {
+			$paths = array();
+		}
+
 		$paths[] = $this->directory;
 
 		return $paths;

@@ -143,9 +143,6 @@ if ( ! function_exists( 'prerender' ) ) {
 				}
 
 				$urls[] = $url;
-				if ( 'prerender' === $type ) {
-					$urls[] = $url;
-				}
 
 				return $urls;
 			}, 10, 2 );
@@ -323,6 +320,10 @@ if ( ! function_exists( 'wp_deep_parse_args' ) ) {
 
 if ( ! function_exists( 'qm_debug' ) ) {
 
+	/**
+	 * @param mixed $value
+	 * @return void
+	 */
 	function qm_debug( $value ) {
 		do_action( 'qm/debug', $value );
 	}
@@ -331,6 +332,10 @@ if ( ! function_exists( 'qm_debug' ) ) {
 
 if ( ! function_exists( 'array_filter_deep' ) ) {
 
+	/**
+	 * @param mixed $value
+	 * @return mixed
+	 */
 	function array_filter_deep( $value ) {
 		if ( ! is_array( $value ) ) {
 			return $value;
