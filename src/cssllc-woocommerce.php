@@ -11,6 +11,15 @@ final class CSSLLC_WooCommerce {
 	const TRANSIENT_NAME = 'cssllc_woocommerce_orders_count';
 
 	/**
+	 * Initialize.
+	 *
+	 * @return void
+	 */
+	public static function init() : void {
+		static::instance();
+	}
+
+	/**
 	 * Get instance.
 	 *
 	 * @return self
@@ -376,4 +385,4 @@ final class CSSLLC_WooCommerce {
 
 }
 
-add_action( 'woocommerce_loaded', array( 'CSSLLC_WooCommerce', 'instance' ) );
+add_action( 'woocommerce_loaded', array( 'CSSLLC_WooCommerce', 'init' ) );
