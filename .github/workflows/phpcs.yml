@@ -1,0 +1,50 @@
+name: PHPCS
+run-name: Run PHPCS on `${{ github.head_ref }}`
+
+on:
+  pull_request:
+    paths:
+      - 'src/*.php'
+      - '.github/workflows/phpcs.yml'
+      - 'phpcs.xml'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  phpcs:
+    runs-on: ubuntu-latest
+    steps:
+
+      - uses: actions/checkout@v3
+
+      - name: Detect File Changes
+        uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          list-files: shell
+          filters: |
+            wpcontent:
+              - added|modified: 'src/**/*.php'
+
+      - name: Setup PHP
+        if: ${{ steps.filter.outputs.wpcontent == 'true' }}
+        uses: "shivammathur/setup-php@v2"
+        with:
+          php-version: "8.2"
+          ini-values: "memory_limit=1G"
+          coverage: none
+
+      - name: Validate composer.json and composer.lock
+        if: ${{ steps.filter.outputs.wpcontent == 'true' }}
+        run: composer validate --no-check-publish
+
+      - name: Install Composer dependencies
+        if: ${{ steps.filter.outputs.wpcontent == 'true' }}
+        run: |
+          composer install --prefer-dist --no-progress --no-suggest --optimize-autoloader
+
+      - name: Run PHPCS checks
+        if: ${{ steps.filter.outputs.wpcontent == 'true' }}
+        run: ./vendor/bin/phpcs ${{ steps.filter.outputs.wpcontent_files }}
