@@ -6,7 +6,7 @@
  * Plugin URI: https://github.com/cssllc/mu-plugins
  */
 
-if ( !function_exists( 'create_post_type_labels' ) ) {
+if ( ! function_exists( 'create_post_type_labels' ) ) {
 
 	/**
 	* Helper to create post type labels.
@@ -53,7 +53,7 @@ if ( !function_exists( 'create_post_type_labels' ) ) {
 
 }
 
-if ( !function_exists( 'create_taxonomy_labels' ) ) {
+if ( ! function_exists( 'create_taxonomy_labels' ) ) {
 
 	/**
 	 * Helper to create taxonomy labels.
@@ -92,7 +92,7 @@ if ( !function_exists( 'create_taxonomy_labels' ) ) {
 
 }
 
-if ( !function_exists( 'prerender' ) ) {
+if ( ! function_exists( 'prerender' ) ) {
 
 	/**
 	 * Add pre-render link tags for specified URLs.
@@ -106,7 +106,7 @@ if ( !function_exists( 'prerender' ) ) {
 
 		# Check if it's too late.
 		if (
-			     did_action( 'wp_head' )
+			did_action( 'wp_head' )
 			|| doing_action( 'wp_head' )
 		) {
 			trigger_error( sprintf( '<code>%s</code> must be called before <code>%s</code> action.', __FUNCTION__ . '()', 'wp_head:2' ) );
@@ -117,11 +117,12 @@ if ( !function_exists( 'prerender' ) ) {
 		$prerender_urls = ( array ) $prerender_urls;
 
 		# Evaluate passed values.
-		$prerender_urls = array_filter( $prerender_urls, function( $url ) {
-			if ( empty( $url ) )
+		$prerender_urls = array_filter( $prerender_urls, function ( $url ) {
+			if ( empty( $url ) ) {
 				return false;
+			}
 
-			if ( !wp_http_validate_url( $url ) ) {
+			if ( ! wp_http_validate_url( $url ) ) {
 				trigger_error( sprintf( '<code>%s</code> was evaluated by <code>%s</code> and failed as a valid URL.', $url, 'wp_http_validate_url()' ) );
 				return false;
 			}
@@ -130,22 +131,27 @@ if ( !function_exists( 'prerender' ) ) {
 		} );
 
 		# If no valid URLs, bail.
-		if ( empty( $prerender_urls ) )
+		if ( empty( $prerender_urls ) ) {
 			return;
+		}
 
 		# Add URLs for use by wp_resource_hints().
-		foreach ( $prerender_urls as $url )
-			add_filter( 'wp_resource_hints', function( array $urls, string $type ) use( $url ) {
-				if ( 'prerender' === $type )
-					$urls[] = $url;
+		foreach ( $prerender_urls as $url ) {
+			add_filter( 'wp_resource_hints', function ( array $urls, string $type ) use ( $url ) : array {
+				if ( 'prerender' !== $type ) {
+					return $urls;
+				}
+
+				$urls[] = $url;
 
 				return $urls;
 			}, 10, 2 );
+		}
 	}
 
 }
 
-if ( !function_exists( 'target' ) ) {
+if ( ! function_exists( 'target' ) ) {
 
 	/**
 	 * Create "target" attribute.
@@ -157,10 +163,11 @@ if ( !function_exists( 'target' ) ) {
 	 */
 	function target( $target, $rel = null, bool $echo = true ) {
 		if (
-			    empty( $target )
-			|| !is_string( $target )
-		)
+			empty( $target )
+			|| ! is_string( $target )
+		) {
 			return '';
+		}
 
 		# Start creating the output.
 		$return = ' target="' . esc_attr( trim( $target ) ) . '"';
@@ -169,12 +176,14 @@ if ( !function_exists( 'target' ) ) {
 		if ( false !== $rel ) {
 
 			# If new window, add "noreferrer" and "noopener".
-			if ( '_blank' === $target )
+			if ( '_blank' === $target ) {
 				$rel .= ' noreferrer noopener';
+			}
 
 			# Add "rel" attribute.
-			if ( !empty( $rel ) )
+			if ( ! empty( $rel ) ) {
 				$return .= ' rel="' . esc_attr( trim( $rel ) ) . '"';
+			}
 
 		}
 
@@ -189,7 +198,7 @@ if ( !function_exists( 'target' ) ) {
 
 }
 
-if ( !function_exists( 'make_email_address_clickable' ) ) {
+if ( ! function_exists( 'make_email_address_clickable' ) ) {
 
 	/**
 	 * Add link to email address.
@@ -199,30 +208,35 @@ if ( !function_exists( 'make_email_address_clickable' ) ) {
 	 * @return string
 	 */
 	function make_email_address_clickable( string $email_address, bool $antispambot = true ) {
-		if ( !is_email( $email_address ) )
+		if ( ! is_email( $email_address ) ) {
 			return $email_address;
+		}
 
-		if ( $antispambot )
+		if ( $antispambot ) {
 			$email_address = antispambot( $email_address );
+		}
 
 		return '<a href="' . esc_attr( 'mailto:' . $email_address ) . '">' . $email_address . '</a>';
 	}
 
 }
 
-if ( !function_exists( 'make_phone_number_clickable' ) ) {
+if ( ! function_exists( 'make_phone_number_clickable' ) ) {
 
 	function make_phone_number_clickable( string $phone_number, bool $antispambot = true ) : string {
 		$markup = $phone_number;
 
-		if ( empty( $markup ) )
+		if ( empty( $markup ) ) {
 			return '';
+		}
 
-		if ( $antispambot )
+		if ( $antispambot ) {
 			$markup = antispambot( $markup );
+		}
 
 		$digits = (string) preg_replace( '/[^\+0-9]/', '', $phone_number );
-		$markup = sprintf( '<a href="tel:%s">%s</a>',
+		$markup = sprintf(
+			'<a href="tel:%s">%s</a>',
 			esc_attr( antispambot( $digits ) ),
 			$markup
 		);
@@ -306,6 +320,10 @@ if ( ! function_exists( 'wp_deep_parse_args' ) ) {
 
 if ( ! function_exists( 'qm_debug' ) ) {
 
+	/**
+	 * @param mixed $value
+	 * @return void
+	 */
 	function qm_debug( $value ) {
 		do_action( 'qm/debug', $value );
 	}
@@ -314,6 +332,10 @@ if ( ! function_exists( 'qm_debug' ) ) {
 
 if ( ! function_exists( 'array_filter_deep' ) ) {
 
+	/**
+	 * @param mixed $value
+	 * @return mixed
+	 */
 	function array_filter_deep( $value ) {
 		if ( ! is_array( $value ) ) {
 			return $value;

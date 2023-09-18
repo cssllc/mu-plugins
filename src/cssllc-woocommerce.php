@@ -11,15 +11,25 @@ final class CSSLLC_WooCommerce {
 	const TRANSIENT_NAME = 'cssllc_woocommerce_orders_count';
 
 	/**
+	 * Initialize.
+	 *
+	 * @return void
+	 */
+	public static function init() : void {
+		static::instance();
+	}
+
+	/**
 	 * Get instance.
 	 *
 	 * @return self
 	 */
-	static function instance() : self {
+	public static function instance() : self {
 		static $instance = null;
 
-		if ( is_null( $instance ) )
+		if ( is_null( $instance ) ) {
 			$instance = new self;
+		}
 
 		return $instance;
 	}
@@ -28,14 +38,12 @@ final class CSSLLC_WooCommerce {
 	 * Construct.
 	 */
 	protected function __construct() {
-
-		add_action( 'admin_enqueue_scripts',  array( $this, 'action__admin_enqueue_scripts' ) );
-		add_action( 'wp_enqueue_scripts',     array( $this, 'action__wp_enqueue_scripts' ) );
-		add_action( 'wp_dashboard_setup',     array( $this, 'action__wp_dashboard_setup' ) );
-		add_action( 'admin_bar_menu',         array( $this, 'action__admin_bar_menu' ), 65 );
+		add_action( 'admin_enqueue_scripts', array( $this, 'action__admin_enqueue_scripts' ) );
+		add_action( 'wp_enqueue_scripts', array( $this, 'action__wp_enqueue_scripts' ) );
+		add_action( 'wp_dashboard_setup', array( $this, 'action__wp_dashboard_setup' ) );
+		add_action( 'admin_bar_menu', array( $this, 'action__admin_bar_menu' ), 65 );
 
 		add_filter( 'dashboard_glance_items', array( $this, 'filter__dashboard_glance_items' ) );
-
 	}
 
 	/**
@@ -51,8 +59,9 @@ final class CSSLLC_WooCommerce {
 		$icon    = '<span class="ab-icon"></span>';
 		$url     = add_query_arg( 'post_type', 'shop_order', admin_url( 'edit.php' ) );
 
-		$title = sprintf( '<span class="ab-label count-%1$s" aria-hidden="true">%2$s</span><span class="screen-reader-text">%3$s</span>',
-			esc_attr( $count ),
+		$title = sprintf(
+			'<span class="ab-label count-%1$s" aria-hidden="true">%2$s</span><span class="screen-reader-text">%3$s</span>',
+			esc_attr( (string) $count ),
 			number_format_i18n( $count ),
 			$text
 		);
@@ -69,13 +78,16 @@ final class CSSLLC_WooCommerce {
 			$screen = get_current_screen();
 
 			if (
-				'shop_order' === $screen->id
-				&&    'post' === $screen->base
-			)
+				! is_null( $screen )
+				&& 'shop_order' === $screen->id
+				&& 'post' === $screen->base
+			) {
 				$current_id = $_GET['post'];
+			}
 		}
 
-		$title = sprintf( '<input type="text" id="%1$s" placeholder="Order ID" value="%2$s" />',
+		$title = sprintf(
+			'<input type="text" id="%1$s" placeholder="Order ID" value="%2$s" />',
 			'cssllc-woocommerce-admin-bar-orders-search',
 			esc_attr( $current_id )
 		);
@@ -96,8 +108,9 @@ final class CSSLLC_WooCommerce {
 	protected function orders_count() : int {
 		$count = absint( get_transient( self::TRANSIENT_NAME ) );
 
-		if ( !empty( $count ) )
+		if ( ! empty( $count ) ) {
 			return $count;
+		}
 
 		$count = $this->count_orders();
 
@@ -116,8 +129,11 @@ final class CSSLLC_WooCommerce {
 	protected function count_orders() : int {
 		global $wpdb;
 
+		if ( ! function_exists( 'wc_get_order_types' ) ) {
+			return 0;
+		}
+
 		$values       = wc_get_order_types( 'order-count' );
-		// $values[] = 'post';
 		$placeholders = implode( ', ', array_fill( 0, count( $values ), '%s' ) );
 		$start        = strtotime( 'midnight', time() + ( HOUR_IN_SECONDS * get_option( 'gmt_offset' ) ) );
 		$values[]     = date( 'Y-m-d H:i:s', $start );
@@ -137,7 +153,7 @@ final class CSSLLC_WooCommerce {
 	 */
 	protected function enqueue_assets() : void {
 		wp_add_inline_script( 'admin-bar', $this->inline_script__admin_bar() );
-		wp_add_inline_style(  'admin-bar', $this->inline_style__admin_bar()  );
+		wp_add_inline_style( 'admin-bar', $this->inline_style__admin_bar() );
 	}
 
 	/**
@@ -145,7 +161,7 @@ final class CSSLLC_WooCommerce {
 	 *
 	 * @return string
 	 */
-	function inline_style__dashboard() : string {
+	public function inline_style__dashboard() : string {
 		ob_start();
 		?>
 
@@ -163,7 +179,7 @@ final class CSSLLC_WooCommerce {
 		}
 
 		<?php
-		return ob_get_clean();
+		return (string) ob_get_clean();
 	}
 
 	/**
@@ -207,7 +223,7 @@ final class CSSLLC_WooCommerce {
 		} );
 
 		<?php
-		return ob_get_clean();
+		return (string) ob_get_clean();
 	}
 
 	/**
@@ -255,7 +271,7 @@ final class CSSLLC_WooCommerce {
 		}
 
 		<?php
-		return ob_get_clean();
+		return (string) ob_get_clean();
 	}
 
 
@@ -275,9 +291,10 @@ final class CSSLLC_WooCommerce {
 	 * @uses $this->enqueue_assets()
 	 * @return void
 	 */
-	function action__admin_enqueue_scripts() : void {
-		if ( 'admin_enqueue_scripts' !== current_action() )
+	public function action__admin_enqueue_scripts() : void {
+		if ( 'admin_enqueue_scripts' !== current_action() ) {
 			return;
+		}
 
 		$this->enqueue_assets();
 	}
@@ -288,9 +305,10 @@ final class CSSLLC_WooCommerce {
 	 * @uses $this->enqueue_assets()
 	 * @return void
 	 */
-	function action__wp_enqueue_scripts() : void {
-		if ( 'wp_enqueue_scripts' !== current_action() )
+	public function action__wp_enqueue_scripts() : void {
+		if ( 'wp_enqueue_scripts' !== current_action() ) {
 			return;
+		}
 
 		$this->enqueue_assets();
 	}
@@ -301,9 +319,10 @@ final class CSSLLC_WooCommerce {
 	 * @uses $this->enqueue_assets()
 	 * @return void
 	 */
-	function action__wp_dashboard_setup() : void {
-		if ( 'wp_dashboard_setup' !== current_action() )
+	public function action__wp_dashboard_setup() : void {
+		if ( 'wp_dashboard_setup' !== current_action() ) {
 			return;
+		}
 
 		wp_add_inline_style( 'dashboard', $this->inline_style__dashboard() );
 	}
@@ -315,9 +334,10 @@ final class CSSLLC_WooCommerce {
 	 * @uses $this->add_menu()
 	 * @return void
 	 */
-	function action__admin_bar_menu( WP_Admin_Bar $bar ) : void {
-		if ( 'admin_bar_menu' !== current_action() )
+	public function action__admin_bar_menu( WP_Admin_Bar $bar ) : void {
+		if ( 'admin_bar_menu' !== current_action() ) {
 			return;
+		}
 
 		$this->add_menu( $bar );
 	}
@@ -337,17 +357,22 @@ final class CSSLLC_WooCommerce {
 	 *
 	 * - add count of CPTs to 'At a Glance' dashboard widget.
 	 *
-	 * @param array $items
+	 * @param array<string, string> $items
 	 *
-	 * @return array
+	 * @return array<string, string>
 	 */
-	function filter__dashboard_glance_items( $items ) {
+	public function filter__dashboard_glance_items( $items ) {
 		foreach ( array( 'product', 'shop_order', 'shop_coupon' ) as $post_type ) {
 			$object = get_post_type_object( $post_type );
 			$count  = wp_count_posts( $post_type );
 			$url    = add_query_arg( 'post_type', $post_type, admin_url( 'edit.php' ) );
 
-			$items['count_' . $post_type] = sprintf( '<a class="icon-wc-%1$s" href="%2$s">%3$s %4$s</a>',
+			if ( is_null( $object ) ) {
+				continue;
+			}
+
+			$items[ 'count_' . $post_type ] = sprintf(
+				'<a class="icon-wc-%1$s" href="%2$s">%3$s %4$s</a>',
 				esc_attr( sanitize_html_class( $post_type ) ),
 				esc_attr( esc_url( $url ) ),
 				esc_html( number_format_i18n( $count->publish ) ),
@@ -360,4 +385,4 @@ final class CSSLLC_WooCommerce {
 
 }
 
-add_action( 'woocommerce_loaded', array( 'CSSLLC_WooCommerce', 'instance' ) );
+add_action( 'woocommerce_loaded', array( 'CSSLLC_WooCommerce', 'init' ) );

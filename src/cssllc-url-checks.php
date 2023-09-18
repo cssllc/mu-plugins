@@ -14,11 +14,12 @@ class CSSLLC_URL_Checks {
 	 *
 	 * @return self
 	 */
-	static function instance() {
+	public static function instance() {
 		static $instance = null;
 
-		if ( is_null( $instance ) )
+		if ( is_null( $instance ) ) {
 			$instance = new self;
+		}
 
 		return $instance;
 	}
@@ -183,6 +184,7 @@ class CSSLLC_URL_Checks {
 		}
 
 		$urls = array_values( $urls );
+		$urls = array_filter( $urls );
 
 		return $urls;
 	}

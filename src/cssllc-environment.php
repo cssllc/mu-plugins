@@ -9,7 +9,7 @@
 # Set development email address.
 $dev_email_address = '';
 
-if ( !function_exists( 'cssllc_require_set_environment_type' ) ) {
+if ( ! function_exists( 'cssllc_require_set_environment_type' ) ) {
 
 	/**
 	 * Prevent site load if environment type not explicitly set.
@@ -23,36 +23,41 @@ if ( !function_exists( 'cssllc_require_set_environment_type' ) ) {
 	 * @uses wp_die()
 	 */
 	function cssllc_require_set_environment_type() : void {
-		if ( !function_exists( 'wp_get_environment_type' ) )
+		if ( ! function_exists( 'wp_get_environment_type' ) ) {
 			return;
+		}
 
-		if ( wp_installing() )
+		if ( wp_installing() ) {
 			return;
+		}
 
 		$current_env = '';
 
 		if ( function_exists( 'getenv' ) ) {
 			$has_env = getenv( 'WP_ENVIRONMENT_TYPE' );
 
-			if ( false !== $has_env )
+			if ( false !== $has_env ) {
 				$current_env = $has_env;
+			}
 		}
 
-		if ( defined( 'WP_ENVIRONMENT_TYPE' ) )
+		if ( defined( 'WP_ENVIRONMENT_TYPE' ) ) {
 			$current_env = WP_ENVIRONMENT_TYPE;
+		}
 
-		if ( wp_get_environment_type() === $current_env )
+		if ( wp_get_environment_type() === $current_env ) {
 			return;
+		}
 
 		wp_die(
-			  'Explicitly define a valid environment type to activate the site. <br />'
+			'Explicitly define a valid environment type to activate the site. <br />'
 			. 'See <code>wp_get_environment_type()</code> or <a href="https://make.wordpress.org/core/2020/07/24/new-wp_get_environment_type-function-in-wordpress-5-5/">Make WordPress Core article</a> for more info.'
 		);
 	}
 
 }
 
-if ( !function_exists( 'is_production' ) ) {
+if ( ! function_exists( 'is_production' ) ) {
 
 	/**
 	 * Check if production environment.
@@ -78,8 +83,9 @@ cssllc_require_set_environment_type();
 ##     ## ########   ######   #######   ######     ##    ##     ## ######## ##    ##    ##     ######
 */
 
-if ( empty( $dev_email_address ) )
+if ( empty( $dev_email_address ) ) {
 	trigger_error( 'Update <code>$dev_email_address</code> in ' . __FILE__, E_USER_WARNING );
+}
 
 /**
  * Check if production environment.
@@ -90,8 +96,9 @@ if ( is_production() ) {
 	 * Add inactive status indication to mu-plugin row meta.
 	 */
 	add_filter( 'plugin_row_meta', function ( array $meta, string $plugin_file ) : array {
-		if ( basename( __FILE__ ) !== $plugin_file )
+		if ( basename( __FILE__ ) !== $plugin_file ) {
 			return $meta;
+		}
 
 		array_unshift( $meta, '<strong>Inactive</strong>' );
 		return $meta;
@@ -109,11 +116,11 @@ if ( is_production() ) {
  * @uses wp_add_dashboard_widget()
  * @return void
  */
-add_action( 'wp_dashboard_setup', function() : void {
+add_action( 'wp_dashboard_setup', function () : void {
 	wp_add_dashboard_widget(
 		'cssllc-development-environment',
 		'Development Environment Adjustments',
-		function() {
+		function () {
 			echo '<ul style="list-style-type: disc; margin-left: 20px">'
 
 				# WC_SQUARE_ENABLE_STAGING constant
@@ -156,7 +163,7 @@ add_action( 'wp_dashboard_setup', function() : void {
  *
  * @return void
  */
-add_action( 'admin_notices', function() : void {
+add_action( 'admin_notices', function () : void {
 	echo '<div class="notice notice-warning">' .
 		'<p>Functionality adjustments due to development environment; see <abbr title="' . esc_attr( __FILE__ ) . '">' . basename( __FILE__ ) . '</abbr> mu-plugin.</p>' .
 	'</div>';
@@ -172,8 +179,9 @@ add_action( 'admin_notices', function() : void {
  * @return array
  */
 add_filter( 'plugin_row_meta', function ( array $meta, string $plugin_file ) : array {
-	if ( basename( __FILE__ ) !== $plugin_file )
+	if ( basename( __FILE__ ) !== $plugin_file ) {
 		return $meta;
+	}
 
 	array_unshift( $meta, '<strong style="color: red;">!!! ACTIVE !!!</strong>' );
 	return $meta;
@@ -192,8 +200,13 @@ define( 'WC_SQUARE_ENABLE_STAGING', true );
  * @param string $email_address
  * @return string
  */
-add_filter(      'pre_option_admin_email', function ( string $email_address ) use ( $dev_email_address ) : string { return $dev_email_address; } );
-add_filter( 'pre_site_option_admin_email', function ( string $email_address ) use ( $dev_email_address ) : string { return $dev_email_address; } );
+add_filter( 'pre_option_admin_email', function ( string $email_address ) use ( $dev_email_address ) : string {
+	return $dev_email_address;
+} );
+
+add_filter( 'pre_site_option_admin_email', function ( string $email_address ) use ( $dev_email_address ) : string {
+	return $dev_email_address;
+} );
 
 /**
  * Filter: wp_mail
@@ -203,7 +216,10 @@ add_filter( 'pre_site_option_admin_email', function ( string $email_address ) us
  * @param array $args
  * @return array
  */
-add_filter( 'wp_mail', function ( array $args ) use ( $dev_email_address ) : array { $args['to'] = $dev_email_address; return $args; }, 999 );
+add_filter( 'wp_mail', function ( array $args ) use ( $dev_email_address ) : array {
+	$args['to'] = $dev_email_address;
+	return $args;
+}, 999 );
 
 /**
  * Prevent running of AutomateWoo workflows.
@@ -250,12 +266,13 @@ add_filter( 'automatewoo_custom_validate_workflow', '__return_false' );
  * @param array $allcaps
  * @return array
  */
-add_filter( 'user_has_cap', function( array $allcaps ) : array {
+add_filter( 'user_has_cap', function ( array $allcaps ) : array {
 	if (
 		defined( 'QM_DISABLED' )
 		&& QM_DISABLED
-	)
+	) {
 		return $allcaps;
+	}
 
 	$allcaps['view_query_monitor'] = true;
 	return $allcaps;
@@ -271,18 +288,22 @@ add_filter( 'user_has_cap', function( array $allcaps ) : array {
  *
  * @return void
  */
-$change_asset_versions = function() : void {
-	foreach ( wp_scripts()->registered as $handle => &$script )
-		if ( 'init' === $script->ver )
+$change_asset_versions = function () : void {
+	foreach ( wp_scripts()->registered as $handle => &$script ) {
+		if ( 'init' === $script->ver ) {
 			$script->ver = constant( 'WP_START_TIMESTAMP' );
+		}
+	}
 
-	foreach ( wp_styles()->registered as $handle => &$style )
-		if ( 'init' === $style->ver )
+	foreach ( wp_styles()->registered as $handle => &$style ) {
+		if ( 'init' === $style->ver ) {
 			$style->ver = constant( 'WP_START_TIMESTAMP' );
+		}
+	}
 };
 
 add_action( 'send_headers', $change_asset_versions, 5 );
-add_action( 'wp_head',      $change_asset_versions, 5 );
+add_action( 'wp_head', $change_asset_versions, 5 );
 
 /**
  * Action: init
@@ -293,7 +314,7 @@ add_action( 'wp_head',      $change_asset_versions, 5 );
  *
  * @return void
  */
-add_action( 'init', static function() : void {
+add_action( 'init', static function () : void {
 	if ( ! class_exists( 'ActionScheduler' ) ) {
 		return;
 	}
@@ -308,12 +329,12 @@ add_action( 'init', static function() : void {
  *
  * @return void
  */
-add_action( 'plugins_loaded', static function() : void {
+add_action( 'plugins_loaded', static function () : void {
 	if ( ! defined( 'DOING_CRON' ) || ! DOING_CRON ) {
 		return;
 	}
 
-	remove_action( 'backwpup_cron',          array( 'BackWPup_Cron', 'run' ) );
+	remove_action( 'backwpup_cron', array( 'BackWPup_Cron', 'run' ) );
 	remove_action( 'backwpup_check_cleanup', array( 'BackWPup_Cron', 'check_cleanup' ) );
 }, 12 );
 
@@ -327,8 +348,13 @@ add_action( 'plugins_loaded', static function() : void {
  * @return int
  */
 add_filter( 'pre_option_blog_public', static function ( $value ) {
-	if ( is_string(  $value ) ) { return '0'; }
-	if ( is_numeric( $value ) ) { return  0;  }
+	if ( is_string( $value ) ) {
+		return '0';
+	}
+
+	if ( is_numeric( $value ) ) {
+		return 0;
+	}
 
 	return false;
 } );
