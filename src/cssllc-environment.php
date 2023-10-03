@@ -83,7 +83,7 @@ cssllc_require_set_environment_type();
 ##     ## ########   ######   #######   ######     ##    ##     ## ######## ##    ##    ##     ######
 */
 
-if ( empty( $dev_email_address ) ) {
+if ( 'caleb' !== $_SERVER['USER'] && empty( $dev_email_address ) ) {
 	trigger_error( 'Update <code>$dev_email_address</code> in ' . __FILE__, E_USER_WARNING );
 }
 
