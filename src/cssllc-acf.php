@@ -50,6 +50,10 @@ class CSSLLC_ACF {
 	protected function __construct() {
 		$this->directory = trailingslashit( __DIR__ ) . 'acf-json';
 
+		if ( defined( 'WPMU_PLUGIN_DIR' ) ) {
+			$this->directory = trailingslashit( constant( 'WPMU_PLUGIN_DIR' ) ) . 'acf-json';
+		}
+
 		$this->maybe_create_directory();
 
 		add_action( 'acf/input/admin_head', array( $this, 'action__acf_input_admin_head' ) );
