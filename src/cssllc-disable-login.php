@@ -8,9 +8,6 @@ class CSSLLC_Disable_Login {
 	/** @var string */
 	protected $filepath = '';
 
-	/** @var bool */
-	protected $locked = false;
-
 	/** @var string */
 	protected $headline = '';
 
@@ -22,6 +19,9 @@ class CSSLLC_Disable_Login {
 		'charliealphalimaechobravo',
 	);
 
+	/** @var int */
+	protected $unlock = 0;
+
 	/**
 	 * Initialize.
 	 *
@@ -29,6 +29,14 @@ class CSSLLC_Disable_Login {
 	 */
 	public static function init() : void {
 		$instance = new self;
+
+		if ( defined( 'WP_CLI' ) && constant( 'WP_CLI' ) ) {
+			WP_CLI::add_command( 'login lock', array( $instance, 'cli__login_lock' ) );
+			WP_CLI::add_command( 'login unlock', array( $instance, 'cli__login_unlock' ) );
+			WP_CLI::add_command( 'login status', array( $instance, 'cli__login_status' ) );
+
+			return;
+		}
 
 		if ( constant( 'PHP_SESSION_NONE' ) === session_status() ) {
 			session_start();
@@ -45,12 +53,6 @@ class CSSLLC_Disable_Login {
 	 */
 	protected function __construct() {
 		$this->filepath = sprintf( '%s/%s', constant( 'WP_CONTENT_DIR' ), $this->filename );
-
-		if ( ! file_exists( $this->filepath ) ) {
-			return;
-		}
-
-		$this->locked   = true;
 		$this->headline = __( 'Login disabled' );
 		$this->message  = __( 'Please check back later.' );
 
@@ -67,7 +69,7 @@ class CSSLLC_Disable_Login {
 			return;
 		}
 
-		if ( ! $this->locked ) {
+		if ( ! $this->locked() ) {
 			return;
 		}
 
@@ -96,6 +98,27 @@ class CSSLLC_Disable_Login {
 	}
 
 	/**
+	 * Logic to determine if locked.
+	 *
+	 * @return bool
+	 */
+	protected function locked() : bool {
+		if ( ! file_exists( $this->filepath ) ) {
+			return false;
+		}
+
+		if ( empty( $this->unlock ) ) {
+			return true;
+		}
+
+		if ( time() >= $this->unlock ) {
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
 	 * Check if provided override code is valid.
 	 *
 	 * @return bool
@@ -121,11 +144,15 @@ class CSSLLC_Disable_Login {
 	}
 
 	/**
-	 * Read .disable-login file and process data.
+	 * Read .disable-wplogin file and process data.
 	 *
 	 * @return void
 	 */
 	protected function read_file() : void {
+		if ( ! file_exists( $this->filepath ) ) {
+			return;
+		}
+
 		$contents = file_get_contents( $this->filepath );
 
 		if ( empty( $contents ) ) {
@@ -138,11 +165,13 @@ class CSSLLC_Disable_Login {
 			'overrides' => $this->overrides,
 			'headline'  => $this->headline,
 			'message'   => $this->message,
+			'unlock'    => $this->unlock,
 		) );
 
 		$this->overrides = $contents['overrides'];
 		$this->headline  = $contents['headline'];
 		$this->message   = $contents['message'];
+		$this->unlock    = $contents['unlock'];
 	}
 
 	/**
@@ -162,6 +191,114 @@ class CSSLLC_Disable_Login {
 		}
 
 		return wp_hash( ( string ) $data );
+	}
+
+	/**
+	 * CLI: login lock
+	 *
+	 * Lock the login screen.
+	 *
+	 * @return void
+	 */
+	public function cli__login_lock( array $args, array $assoc_args = array() ) : void {
+		if ( $this->locked() ) {
+			WP_CLI::warning( 'Login is already locked.' );
+			return;
+		}
+
+		WP_CLI::debug( 'Checking for existing file at ' . $this->filepath );
+
+		if ( file_exists( $this->filepath ) ) {
+			$result = unlink( $this->filepath );
+			$debug  = 'Deleted existing lock file';
+
+			if ( ! $result ) {
+				$debug = 'Unable to delete existing lock file';
+			}
+
+			WP_CLI::debug( $debug );
+		}
+
+		$args = array();
+
+		foreach ( array( 'headline', 'message', 'overrides', 'unlock' ) as $arg ) {
+			if ( ! array_key_exists( $arg, $assoc_args ) ) {
+				continue;
+			}
+
+			$args[ $arg ] = json_decode( WP_CLI\Utils\get_flag_value( $assoc_args, $arg, '' ) );
+		}
+
+		$result = file_put_contents( $this->filepath, json_encode( $args ) );
+
+		WP_CLI::debug( 'file_put_contents() returned `' . ( false === $result ? 'false' : $result ) . '`' );
+
+		if ( ! file_exists( $this->filepath ) ) {
+			WP_CLI::error( 'Unable to lock login.' );
+		}
+
+		WP_CLI::success( 'Login locked.' );
+	}
+
+	/**
+	 * CLI: login unlock
+	 *
+	 * Unlock the login screen.
+	 *
+	 * @return void
+	 */
+	public function cli__login_unlock( array $args, array $assoc_args = array() ) : void {
+		if ( ! $this->locked() ) {
+			WP_CLI::warning( 'Login is not locked.' );
+			return;
+		}
+
+		WP_CLI::debug( 'Deleting ' . $this->filepath );
+
+		$result = unlink( $this->filepath );
+
+		if ( ! $result ) {
+			WP_CLI::error( 'Unable to unlock login.' );
+		}
+
+		WP_CLI::success( 'Login unlocked.' );
+	}
+
+	public function cli__login_status( array $args, array $assoc_args = array() ) : void {
+		$status = 'unlocked';
+
+		if ( $this->locked() ) {
+			$status = 'locked';
+		}
+
+		WP_CLI::line( $status );
+
+		if ( ! WP_CLI\Utils\get_flag_value( $assoc_args, 'params', false ) ) {
+			return;
+		}
+
+		$format = WP_CLI\Utils\get_flag_value( $assoc_args, 'format', 'table' );
+		$fields = array( 'key', 'value' );
+		$items  = array(
+				array(
+					'key'   => 'headline',
+					'value' => $this->headline,
+				),
+				array(
+					'key'   => 'message',
+					'value' => $this->message,
+				),
+				array(
+					'key'   => 'overrides',
+					'value' => $this->overrides,
+				),
+				array(
+					'key'   => 'unlock',
+					'value' => $this->unlock,
+				),
+		);
+
+		WP_CLI\Utils\format_items( $format, $items, $fields );
 	}
 
 }
