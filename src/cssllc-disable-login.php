@@ -198,6 +198,8 @@ class CSSLLC_Disable_Login {
 	 *
 	 * Lock the login screen.
 	 *
+	 * @param string[] $args
+	 * @param array<string, string> $assoc_args
 	 * @return void
 	 */
 	public function cli__login_lock( array $args, array $assoc_args = array() ) : void {
@@ -226,7 +228,13 @@ class CSSLLC_Disable_Login {
 				continue;
 			}
 
-			$args[ $arg ] = json_decode( WP_CLI\Utils\get_flag_value( $assoc_args, $arg, '' ) );
+			$value = WP_CLI\Utils\get_flag_value( $assoc_args, $arg, '' );
+
+			if ( ! is_string( $value ) ) {
+				$value = '';
+			}
+
+			$args[ $arg ] = json_decode( $value );
 		}
 
 		$result = file_put_contents( $this->filepath, json_encode( $args ) );
@@ -245,9 +253,10 @@ class CSSLLC_Disable_Login {
 	 *
 	 * Unlock the login screen.
 	 *
+	 * @param string[] $args
 	 * @return void
 	 */
-	public function cli__login_unlock( array $args, array $assoc_args = array() ) : void {
+	public function cli__login_unlock( array $args ) : void {
 		if ( ! $this->locked() ) {
 			WP_CLI::warning( 'Login is not locked.' );
 			return;
@@ -264,6 +273,15 @@ class CSSLLC_Disable_Login {
 		WP_CLI::success( 'Login unlocked.' );
 	}
 
+	/**
+	 * CLI: login status [-all]
+	 *
+	 * Display locked status, or locked parameters.
+	 *
+	 * @param string[] $args
+	 * @param array<string, string> $assoc_args
+	 * @return void
+	 */
 	public function cli__login_status( array $args, array $assoc_args = array() ) : void {
 		$status = 'unlocked';
 
@@ -271,30 +289,43 @@ class CSSLLC_Disable_Login {
 			$status = 'locked';
 		}
 
-		WP_CLI::line( $status );
-
-		if ( ! WP_CLI\Utils\get_flag_value( $assoc_args, 'params', false ) ) {
+		if ( ! WP_CLI\Utils\get_flag_value( $assoc_args, 'all', false ) ) {
+			WP_CLI::line( $status );
 			return;
 		}
 
 		$format = WP_CLI\Utils\get_flag_value( $assoc_args, 'format', 'table' );
-		$fields = array( 'key', 'value' );
+
+		if ( ! is_string( $format ) ) {
+			$format = 'table';
+		}
+
+		$fields = array( 'key', 'value', 'default' );
 		$items  = array(
 				array(
-					'key'   => 'headline',
-					'value' => $this->headline,
+					'key'     => 'locked',
+					'value'   => $this->locked(),
+					'default' => ''
 				),
 				array(
-					'key'   => 'message',
-					'value' => $this->message,
+					'key'     => 'headline',
+					'value'   => $this->headline,
+					'default' => __( 'Login disabled' ) === $this->headline,
 				),
 				array(
-					'key'   => 'overrides',
-					'value' => $this->overrides,
+					'key'     => 'message',
+					'value'   => $this->message,
+					'default' => __( 'Please check back later.' ) === $this->message,
 				),
 				array(
-					'key'   => 'unlock',
-					'value' => $this->unlock,
+					'key'     => 'overrides',
+					'value'   => $this->overrides,
+					'default' => array( 'charliealphalimaechobravo' ) === $this->overrides,
+				),
+				array(
+					'key'     => 'unlock',
+					'value'   => $this->unlock,
+					'default' => 0 === $this->unlock,
 				),
 		);
 
