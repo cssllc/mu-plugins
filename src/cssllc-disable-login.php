@@ -38,7 +38,7 @@ class CSSLLC_Disable_Login {
 			return;
 		}
 
-		if ( constant( 'PHP_SESSION_NONE' ) === session_status() ) {
+		if ( constant( 'PHP_SESSION_NONE' ) === session_status() && ! headers_sent() ) {
 			session_start();
 		}
 
@@ -90,7 +90,7 @@ class CSSLLC_Disable_Login {
 	 * @return void
 	 */
 	public function action__wp_login() : void {
-		if ( constant( 'PHP_SESSION_NONE' ) === session_status() ) {
+		if ( constant( 'PHP_SESSION_NONE' ) === session_status() && ! headers_sent() ) {
 			session_start();
 		}
 
