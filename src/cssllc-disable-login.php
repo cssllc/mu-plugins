@@ -194,9 +194,25 @@ class CSSLLC_Disable_Login {
 	}
 
 	/**
-	 * CLI: login lock
-	 *
 	 * Lock the login screen.
+	 *
+	 * ## OPTIONS
+	 *
+	 * [--headline=<headline>]
+	 * : Set the headline for the locked login screen.
+	 * default: Login disabled
+	 *
+	 * [--message=<message>]
+	 * : Set the message for the locked login screen.
+	 * default: Please check back later.
+	 *
+	 * [--overrides=<overrides>]
+	 * : Set the accepted override codes.
+	 * default: ["charliealphalimaechobravo"]
+	 *
+	 * [--unlock=<unlock>]
+	 * : Set the timestamp to automatically unlock the login screen.
+	 * default: 0 (no auto-unlock)
 	 *
 	 * @param string[] $args
 	 * @param array<string, string> $assoc_args
@@ -230,8 +246,8 @@ class CSSLLC_Disable_Login {
 
 			$value = WP_CLI\Utils\get_flag_value( $assoc_args, $arg, '' );
 
-			if ( ! is_string( $value ) ) {
-				$value = '';
+			if ( ! is_string( $value ) || empty( $value ) ) {
+				continue;
 			}
 
 			$args[ $arg ] = json_decode( $value );
@@ -246,17 +262,21 @@ class CSSLLC_Disable_Login {
 		}
 
 		WP_CLI::success( 'Login locked.' );
+		WP_CLI::line( 'Remember to shuffle the salts to logout all sessions (`wp config shuffle-salts`).' );
 	}
 
 	/**
-	 * CLI: login unlock
-	 *
 	 * Unlock the login screen.
 	 *
-	 * @param string[] $args
+	 * ## EXAMPLES
+	 *
+	 *	# Unlock the login screen
+	 *	$ wp login unlock
+	 * 	Success: Login unlocked.
+	 *
 	 * @return void
 	 */
-	public function cli__login_unlock( array $args ) : void {
+	public function cli__login_unlock() : void {
 		if ( ! $this->locked() ) {
 			WP_CLI::warning( 'Login is not locked.' );
 			return;
@@ -274,9 +294,42 @@ class CSSLLC_Disable_Login {
 	}
 
 	/**
-	 * CLI: login status [-all]
-	 *
 	 * Display locked status, or locked parameters.
+	 *
+	 * ## OPTIONS
+	 *
+	 * [--all]
+	 * : Display all parameters for locked login.
+	 *
+	 * [--format=<format>]
+	 * : Render output in a particular format.
+	 * ---
+	 * default: table
+	 * options:
+	 *  - table
+	 *  - csv
+	 *  - count
+	 *  - json
+	 *  - yaml
+	 * ---
+	 *
+	 * ## EXAMPLES
+	 *
+	 * 	# Display locked status.
+	 * 	$ wp login status
+	 * 	locked
+	 *
+	 * 	# Display locked parameters.
+	 * 	$ wp login status --all
+	 * 	+-----------+-------------------------------+---------+
+	 * 	| key       | value                         | default |
+	 * 	+-----------+-------------------------------+---------+
+	 * 	| locked    | 1                             |         |
+	 * 	| headline  | Login disabled                | 1       |
+	 * 	| message   | Please check back later.      | 1       |
+	 * 	| overrides | ["charliealphalimaechobravo"] | 1       |
+	 * 	| unlock    | 0                             | 1       |
+	 * 	+-----------+-------------------------------+---------+
 	 *
 	 * @param string[] $args
 	 * @param array<string, string> $assoc_args
