@@ -59,6 +59,7 @@ class CSSLLC_ACF {
 		add_action( 'acf/input/admin_head', array( $this, 'action__acf_input_admin_head' ) );
 
 		add_filter( 'acf/settings/enable_post_types', '__return_false' );
+		add_filter( 'acf/settings/enable_options_pages_ui', '__return_false' );
 		add_filter( 'acf/settings/save_json', array( $this, 'filter__acf_settings_save_json' ) );
 		add_filter( 'acf/settings/load_json', array( $this, 'filter__acf_settings_load_json' ) );
 	}
