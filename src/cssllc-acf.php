@@ -107,6 +107,10 @@ class CSSLLC_ACF {
 	 * @return array<string, mixed>
 	 */
 	public function filter__acf_load_field_type_image( array $field ) : array {
+		if ( ! is_admin() ) {
+			return $field;
+		}
+		
 		$screen = get_current_screen();
 
 		if ( 'acf-field-group' === $screen->id ) {
