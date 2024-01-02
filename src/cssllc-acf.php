@@ -58,6 +58,7 @@ class CSSLLC_ACF {
 
 		add_action( 'acf/input/admin_head', array( $this, 'action__acf_input_admin_head' ) );
 
+		add_filter( 'acf/load_field/type=image', array( $this,'filter__acf_load_field_type_image' ) );
 		add_filter( 'acf/settings/enable_post_types', '__return_false' );
 		add_filter( 'acf/settings/enable_options_pages_ui', '__return_false' );
 		add_filter( 'acf/settings/save_json', array( $this, 'filter__acf_settings_save_json' ) );
@@ -95,6 +96,35 @@ class CSSLLC_ACF {
 	 */
 	public function action__acf_input_admin_head() : void {
 		echo '<style>.hide-label .acf-label { display: none; }</style>';
+	}
+
+	/**
+	 * Filter: acf/load_field/type=image
+	 *
+	 * Remove requirement from image fields on development environments.
+	 *
+	 * @param array<string, mixed> $field
+	 * @return array<string, mixed>
+	 */
+	public function filter__acf_load_field_type_image( array $field ) : array {
+		$screen = get_current_screen();
+
+		if ( 'acf-field-group' === $screen->id ) {
+			return $field;
+		}
+
+		if ( ! in_array( wp_get_environment_type(), array( 'local', 'development' ) ) ) {
+			return $field;
+		}
+
+		if ( empty( $field['required'] ) ) {
+			return $field;
+		}
+
+		$field['required'] = false;
+		$field['label']   .= ' <span class="acf-required" title="Required, but disabled in dev environment">*</span>';
+
+		return $field;
 	}
 
 	/**
