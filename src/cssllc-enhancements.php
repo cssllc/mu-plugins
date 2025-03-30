@@ -160,13 +160,6 @@ add_filter( 'page_template_hierarchy', function ( $templates ) {
 
 	# Start copy from get_page_template().
 
-		if (
-			$template
-			&& 0 === validate_file( $template )
-		) {
-			$templates[] = $template;
-		}
-
 		if ( $pagename ) {
 			$pagename_decoded = urldecode( $pagename );
 
