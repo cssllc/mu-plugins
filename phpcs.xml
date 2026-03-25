@@ -93,8 +93,6 @@
     <rule ref="Generic.Files.EndFileNewline"/>
     <rule ref="Generic.VersionControl.GitMergeConflict"/>
 
-    <rule ref="PHPCompatibility">
-        <config name="testVersion" value="8.4"/>
-    </rule>
+    <rule ref="PHPCompatibility"/>
 
 </ruleset>
