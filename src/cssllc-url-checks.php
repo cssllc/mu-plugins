@@ -128,10 +128,11 @@ class CSSLLC_URL_Checks {
 	 * @return string[]
 	 */
 	protected function get_urls() : array {
-		$urls = get_transient( self::TRANSIENT_KEY );
+		/** @var string[] */
+		$urls = get_transient( self::TRANSIENT_KEY ) ?: [];
 
 		if ( ! empty( $urls ) && is_array( $urls ) ) {
-			return $urls;
+			return array_values( $urls );
 		}
 
 		// Add more URLs here.

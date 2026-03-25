@@ -93,7 +93,7 @@ final class CSSLLC_GravityForms {
 	 * @uses $this->edit()
 	 * @uses $this->view()
 	 * @param string $html
-	 * @param mixed[] $form
+	 * @param array<string, mixed> $form
 	 * @return string
 	 */
 	public function filter__gform_get_form_filter( string $html, array $form ) : string {

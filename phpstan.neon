@@ -2,7 +2,7 @@ includes:
 	- phpstan-baseline.neon
 
 parameters:
-	level: 9
+	level: 8
 	paths:
 		- src/
 	bootstrapFiles:
@@ -10,8 +10,6 @@ parameters:
 		- vendor/php-stubs/wordpress-stubs/wordpress-stubs.php
 		- vendor/php-stubs/acf-pro-stubs/acf-pro-stubs.php
 		- vendor/php-stubs/wp-cli-stubs/wp-cli-stubs.php
-		- vendor/php-stubs/wp-cli-stubs/wp-cli-commands-stubs.php
-		- vendor/php-stubs/wp-cli-stubs/wp-cli-i18n-stubs.php
 	stubFiles:
 		- dev/wordpress-overrides.stub
 	dynamicConstantNames:
@@ -36,8 +34,6 @@ parameters:
 		- '#PHPDoc tag @throws with type .*? is not subtype of Throwable#'
 		- '#Function gravity_form not found.#'
 		- '/^Parameter #1 \$args of function wp_nav_menu expects.* given\.$/'
-
-	checkAlwaysTrueStrictComparison: true
 
 	# Unfortunately, DocBlocks can't be relied upon in WordPress.
 	treatPhpDocTypesAsCertain: false

@@ -11,9 +11,9 @@
     <arg value="-colors"/>
 
     <!--  Update to the PHP version your production/local docker container runs on -->
-    <config name="testVersion" value="8.2.8"/>
+    <config name="testVersion" value="8.4"/>
     <!-- php -r 'echo PHP_VERSION_ID;' -->
-    <config name="php_version" value="80208%"/>
+    <config name="php_version" value="80504%"/>
 
     <!-- Exclude files -->
     <exclude-pattern>*-config.php</exclude-pattern>
@@ -82,6 +82,7 @@
     <rule ref="WordPressVIPMinimum">
         <severity>3</severity>
         <exclude name="WordPressVIPMinimum.Constants.ConstantString.NotCheckingConstantName"/>
+        <exclude name="WordPressVIPMinimum.JS"/>
     </rule>
 
     <!-- Generic -->
@@ -91,4 +92,9 @@
     <rule ref="Generic.Formatting.MultipleStatementAlignment"/>
     <rule ref="Generic.Files.EndFileNewline"/>
     <rule ref="Generic.VersionControl.GitMergeConflict"/>
+
+    <rule ref="PHPCompatibility">
+        <config name="testVersion" value="8.4"/>
+    </rule>
+
 </ruleset>

@@ -1,30 +1,35 @@
 {
-  "name": "cssllc/mu-plugins",
-  "description": "CSSLLC MU-Plugins",
-  "require-dev": {
-    "automattic/vipwpcs": "^3.0",
-    "szepeviktor/phpstan-wordpress": "^1.1",
-    "phpstan/extension-installer": "^1.1",
-    "php-stubs/acf-pro-stubs": "^6.0",
-    "php-stubs/wordpress-stubs": "^6.0",
-    "squizlabs/php_codesniffer": "^3.7",
-    "mediawiki/mediawiki-codesniffer": "^41.0",
-    "cweagans/composer-patches": "~1.0",
-    "php-stubs/wp-cli-stubs": "^2.8"
-  },
-  "config": {
-    "allow-plugins": {
-      "dealerdirect/phpcodesniffer-composer-installer": true,
-      "phpstan/extension-installer": true,
-      "cweagans/composer-patches": true
+    "name": "cssllc/mu-plugins",
+    "description": "CSSLLC MU-Plugins",
+    "require-dev": {
+        "automattic/vipwpcs": "*",
+        "szepeviktor/phpstan-wordpress": "*",
+        "phpstan/extension-installer": "*",
+        "php-stubs/acf-pro-stubs": "*",
+        "php-stubs/wordpress-stubs": "*",
+        "squizlabs/php_codesniffer": "*",
+        "mediawiki/mediawiki-codesniffer": "*",
+        "php-stubs/wp-cli-stubs": "*",
+        "phpcompatibility/php-compatibility": "*",
+        "symplify/vendor-patches": "*"
+    },
+    "config": {
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true,
+            "phpstan/extension-installer": true,
+            "cweagans/composer-patches": true
+        }
+    },
+    "license": "proprietary",
+    "extra": {
+        "patches": {
+            "php-stubs/acf-pro-stubs": [
+                "dev/patches/php-stubs-acf-pro-stubs-acf-pro-stubs-php.patch"
+            ]
+        }
+    },
+    "scripts": {
+        "phpcs": "./vendor/bin/phpcs -s --standard=phpcs.xml",
+        "phpstan": "./vendor/bin/phpstan --configuration=phpstan.neon --memory-limit=-1"
     }
-  },
-  "license": "proprietary",
-  "extra": {
-    "patches": {
-      "php-stubs/acf-pro-stubs": {
-        "PHPStan return types": "dev/patches/acf-pro-stubs.patch"
-      }
-    }
-  }
 }

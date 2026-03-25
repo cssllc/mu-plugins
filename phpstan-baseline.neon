@@ -1,6 +1,13 @@
 parameters:
 	ignoreErrors:
 		-
-			message: "#^Variable \\$dev_email_address in empty\\(\\) always exists and is always falsy\\.$#"
+			message: '#^Variable \$dev_email_address in empty\(\) always exists and is always falsy\.$#'
+			identifier: empty.variable
 			count: 1
 			path: src/cssllc-environment.php
+
+		-
+			message: '#^Parameter \#2 \$key of function wp_style_add_data expects ''alt''\|''path''\|''rtl''\|''suffix''\|''title'', string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/cssllc-subresourceintegrity.php

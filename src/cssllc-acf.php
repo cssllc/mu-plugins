@@ -110,8 +110,12 @@ class CSSLLC_ACF {
 		if ( ! is_admin() ) {
 			return $field;
 		}
-		
+
 		$screen = get_current_screen();
+
+		if ( ! is_object( $screen ) || ! $screen instanceof \WP_Screen ) {
+			return $field;
+		}
 
 		if ( 'acf-field-group' === $screen->id ) {
 			return $field;

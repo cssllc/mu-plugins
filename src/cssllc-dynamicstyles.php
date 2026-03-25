@@ -49,7 +49,7 @@ class DynamicStyles {
 	 * @param null|string $key
 	 * @return string
 	 */
-	public static function add( string $style, string $key = null ) {
+	public static function add( string $style, ?string $key = null ) {
 		if ( is_null( $key ) ) {
 			$key = microtime( true );
 
