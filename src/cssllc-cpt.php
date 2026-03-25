@@ -18,7 +18,7 @@ defined( 'ABSPATH' ) || die();
 abstract class CSSLLC_CPT {
 
 	/**
-	 * @var string Custom post type slug.
+	 * @var lowercase-string Custom post type slug.
 	 */
 	const TYPE = '';
 

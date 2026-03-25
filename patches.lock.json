@@ -1,0 +1,17 @@
+{
+    "_hash": "25ead99bcd91825db5cfb7b8ac921a81b966fd9f81e4343a3128fec305836682",
+    "patches": {
+        "php-stubs/acf-pro-stubs": [
+            {
+                "package": "php-stubs/acf-pro-stubs",
+                "description": "0",
+                "url": "dev/patches/php-stubs-acf-pro-stubs-acf-pro-stubs-php.patch",
+                "sha256": "c6aa1d61f33beba03614fa69e2c4d6674febbbbb492e01de8b2220ef4444e0cc",
+                "depth": 1,
+                "extra": {
+                    "provenance": "root"
+                }
+            }
+        ]
+    }
+}

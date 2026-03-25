@@ -170,11 +170,9 @@ add_filter( 'page_template_hierarchy', function ( $templates ) {
 			$templates[] = "{$prefix}-{$pagename}.php";
 		}
 
-		if ( $id ) {
-			$templates[] = "{$prefix}-{$id}.php";
-		}
-
 	# End copy from get_page_template().
+
+	$templates[] = "{$prefix}-{$id}.php";
 
 	# Add base template.
 	$templates[] = $prefix . '.php';

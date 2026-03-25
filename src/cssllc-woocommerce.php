@@ -86,10 +86,14 @@ final class CSSLLC_WooCommerce {
 			}
 		}
 
+		if ( ! is_scalar( $current_id ) ) {
+			$current_id = '';
+		}
+
 		$title = sprintf(
 			'<input type="text" id="%1$s" placeholder="Order ID" value="%2$s" />',
 			'cssllc-woocommerce-admin-bar-orders-search',
-			esc_attr( $current_id )
+			esc_attr( (string) $current_id )
 		);
 
 		$bar->add_menu( array(
@@ -106,10 +110,10 @@ final class CSSLLC_WooCommerce {
 	 * @return int
 	 */
 	protected function orders_count() : int {
-		$count = absint( get_transient( self::TRANSIENT_NAME ) );
+		$count = get_transient( self::TRANSIENT_NAME );
 
-		if ( ! empty( $count ) ) {
-			return $count;
+		if ( ! empty( $count ) && is_numeric( $count ) ) {
+			return absint( $count );
 		}
 
 		$count = $this->count_orders();
@@ -135,7 +139,9 @@ final class CSSLLC_WooCommerce {
 
 		$values       = wc_get_order_types( 'order-count' );
 		$placeholders = implode( ', ', array_fill( 0, count( $values ), '%s' ) );
-		$start        = strtotime( 'midnight', time() + ( HOUR_IN_SECONDS * get_option( 'gmt_offset' ) ) );
+		$offset       = get_option( 'gmt_offset' );
+		$offset       = is_scalar( $offset ) ? $offset : 0;
+		$start        = strtotime( 'midnight', time() + ( HOUR_IN_SECONDS * absint( $offset ) ) );
 		$values[]     = date( 'Y-m-d H:i:s', $start );
 
 		$query  = $wpdb->prepare( "SELECT COUNT(*) FROM $wpdb->posts WHERE `post_type` IN ( $placeholders ) AND `post_date` >= %s", $values );

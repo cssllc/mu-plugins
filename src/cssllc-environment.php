@@ -330,7 +330,7 @@ add_action( 'init', static function () : void {
  * @return void
  */
 add_action( 'plugins_loaded', static function () : void {
-	if ( ! defined( 'DOING_CRON' ) || ! DOING_CRON ) {
+	if ( ! wp_doing_cron() ) {
 		return;
 	}
 

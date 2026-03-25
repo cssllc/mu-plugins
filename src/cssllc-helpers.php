@@ -256,7 +256,7 @@ if ( ! function_exists( 'acf_link' ) ) {
 	 * @return string
 	 */
 	function acf_link( array $link, array $attributes = array() ) : string {
-		if ( empty( $link ) || ! is_array( $link ) ) {
+		if ( empty( $link ) ) {
 			return '';
 		}
 
