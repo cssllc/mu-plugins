@@ -26,6 +26,9 @@ class CSSLLC_Flush_All_Rewrites {
 	 *     wp rewrite flush-all --debug
 	 *     wp rewrite flush-all --debug=flush-all
 	 *
+	 * @param array<int, mixed>    $args       Positional arguments.
+	 * @param array<string, mixed> $assoc_args Associative arguments.
+	 *
 	 * @when after_wp_load
 	 */
 	public function run_command( array $args = [], array $assoc_args = [] ): void {
@@ -57,6 +60,7 @@ class CSSLLC_Flush_All_Rewrites {
 			'flush-all'
 		);
 
+		/** @var \cli\progress\Bar $progress */
 		$progress = \WP_CLI\Utils\make_progress_bar( 'Flushing rewrite rules', $total );
 
 		$success_count = 0;
@@ -91,7 +95,7 @@ class CSSLLC_Flush_All_Rewrites {
 
 			$progress->tick( 1, sprintf( 'Flushing %d / %d sites', $current, $total ) );
 
-			usleep( 0.1 * 1000000 );
+			usleep( absint( 0.1 * 1000000 ) );
 		}
 
 		$progress->finish();
@@ -136,6 +140,9 @@ class CSSLLC_Flush_All_Rewrites {
 		return __( 'Flush rewrite rules for all sites on a network.', 'tribe' );
 	}
 
+	/**
+	 * @return array<string, array<string, mixed>>
+	 */
 	protected function arguments(): array {
 		return [];
 	}
@@ -143,7 +150,7 @@ class CSSLLC_Flush_All_Rewrites {
 	/**
 	 * Retrieve all site IDs from the current network.
 	 *
-	 * @return array[]
+	 * @return array<int, array{blog_id: string}>
 	 */
 	private function get_all_site_ids(): array {
 		global $wpdb;
@@ -167,6 +174,6 @@ class CSSLLC_Flush_All_Rewrites {
 
 }
 
-add_action( 'init', static function(): void {
+add_action( 'init', static function (): void {
 	( new CSSLLC_Flush_All_Rewrites() )->register();
 } );

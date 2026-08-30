@@ -1,6 +1,7 @@
 {
     "name": "cssllc/mu-plugins",
     "description": "CSSLLC MU-Plugins",
+    "version": "1.0.0",
     "require-dev": {
         "automattic/vipwpcs": "*",
         "szepeviktor/phpstan-wordpress": "*",
